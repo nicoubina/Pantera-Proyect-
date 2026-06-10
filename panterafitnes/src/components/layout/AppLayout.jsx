@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import AlertBar from "@/components/layout/AlertBar";
 import FeedbackToast from "@/components/layout/FeedbackToast";
 import { getNavigationItems, getRoleLabel } from "@/components/layout/navigation";
 import NotificationBell from "@/components/notificaciones/NotificationBell";
@@ -26,7 +25,6 @@ export default function AppLayout({ children }) {
           <span className="brand-mark">PF</span>
           <div>
             <strong>Pantera Fitness</strong>
-            <small>MVP Frontend</small>
           </div>
         </div>
 
@@ -61,7 +59,6 @@ export default function AppLayout({ children }) {
           </div>
         </header>
 
-        <AlertBar />
         <main className="page-content">{children}</main>
       </div>
 
