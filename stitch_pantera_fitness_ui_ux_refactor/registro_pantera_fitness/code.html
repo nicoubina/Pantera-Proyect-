@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Registro - Pantera Fitness</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Anybody:wght@700;800&family=Hanken+Grotesk:wght@400;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Anybody:wght@100..900&family=Hanken+Grotesk:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-container": "#474746",
+                        "on-tertiary": "#00344e",
+                        "surface": "#131313",
+                        "outline": "#a78b7d",
+                        "inverse-primary": "#9c4500",
+                        "on-secondary-fixed-variant": "#474746",
+                        "background": "#131313",
+                        "on-tertiary-fixed-variant": "#004c6e",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-primary-fixed-variant": "#773300",
+                        "on-surface-variant": "#e0c0b1",
+                        "on-error-container": "#ffdad6",
+                        "secondary": "#c8c6c5",
+                        "on-tertiary-container": "#003b57",
+                        "tertiary-container": "#00aaf2",
+                        "error": "#ffb4ab",
+                        "inverse-surface": "#e5e2e1",
+                        "error-container": "#93000a",
+                        "on-secondary-container": "#b7b4b4",
+                        "surface-container-lowest": "#0e0e0e",
+                        "surface-container": "#201f1f",
+                        "primary": "#ffb68e",
+                        "tertiary": "#8aceff",
+                        "on-secondary": "#313030",
+                        "on-error": "#690005",
+                        "on-primary-fixed": "#331200",
+                        "surface-variant": "#353534",
+                        "primary-container": "#ff7a1a",
+                        "inverse-on-surface": "#313030",
+                        "secondary-fixed": "#e5e2e1",
+                        "tertiary-fixed": "#c9e6ff",
+                        "on-surface": "#e5e2e1",
+                        "surface-tint": "#ffb68e",
+                        "primary-fixed": "#ffdbca",
+                        "on-primary": "#542200",
+                        "primary-fixed-dim": "#ffb68e",
+                        "tertiary-fixed-dim": "#8aceff",
+                        "on-tertiary-fixed": "#001e2f",
+                        "on-primary-container": "#5e2700",
+                        "outline-variant": "#584236",
+                        "surface-container-high": "#2a2a2a",
+                        "on-background": "#e5e2e1",
+                        "surface-container-highest": "#353534",
+                        "surface-container-low": "#1c1b1b",
+                        "surface-bright": "#3a3939",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "surface-dim": "#131313"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "2.5rem",
+                        "gutter": "1.5rem",
+                        "metric-gap": "1rem",
+                        "auth-card-width": "440px",
+                        "container-max": "1200px",
+                        "margin-mobile": "1rem"
+                    },
+                    "fontFamily": {
+                        "display-lg-mobile": ["Anybody"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "label-bold": ["Hanken Grotesk"],
+                        "headline-md": ["Anybody"],
+                        "display-lg": ["Anybody"],
+                        "body-md": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "display-lg-mobile": ["36px", {"lineHeight": "1.1", "fontWeight": "800"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-bold": ["14px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #070707;
+            color: #e5e2e1;
+            font-family: 'Hanken Grotesk', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .auth-card {
+            background-color: #171717;
+            border: 1px solid #262626;
+        }
+
+        @media (max-width: 768px) {
+            .auth-card {
+                width: 100vw;
+                height: 100vh;
+                border: none;
+                background-color: #070707;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                padding: 2rem 1.5rem;
+            }
+            .mobile-bottom-action {
+                margin-top: auto;
+                padding-top: 2rem;
+            }
+        }
+
+        .input-field {
+            background-color: #070707;
+            border: 1px solid #262626;
+            transition: border-color 0.2s ease;
+        }
+
+        .input-field:focus {
+            border-color: #ff7a1a;
+            outline: none;
+        }
+
+        .brand-mark {
+            background-color: #ff7a1a;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-weight: 800;
+            color: #070707;
+        }
+
+        .strength-bar {
+            height: 4px;
+            border-radius: 2px;
+            background-color: #262626;
+            flex: 1;
+            transition: background-color 0.3s ease;
+        }
+
+        .loading-spinner {
+            border: 2px solid rgba(7, 7, 7, 0.1);
+            border-left-color: #070707;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+<div class="auth-card md:w-auth-card-width md:rounded-xl p-8 fade-in shadow-2xl relative overflow-hidden">
+<!-- Brand Header -->
+<div class="flex flex-col items-center text-center mb-8">
+<div class="brand-mark mb-4 text-headline-md font-headline-md">
+                PF
+            </div>
+<h1 class="font-headline-md text-headline-md uppercase tracking-tight text-on-surface">Pantera Fitness</h1>
+<p class="font-body-md text-body-md text-on-surface-variant opacity-80">Entrená con propósito</p>
+</div>
+<!-- Registration Form -->
+<form class="space-y-5" id="registrationForm">
+<div class="grid grid-cols-2 gap-4">
+<div class="flex flex-col gap-1.5">
+<label class="font-label-bold text-label-bold text-on-surface-variant" for="firstName">Nombre</label>
+<input class="input-field rounded-lg px-4 py-3 text-on-surface placeholder:text-[#555] font-body-md" id="firstName" placeholder="Ej: Alex" required="" type="text"/>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-label-bold text-label-bold text-on-surface-variant" for="lastName">Apellido <span class="opacity-40 font-normal">(Opcional)</span></label>
+<input class="input-field rounded-lg px-4 py-3 text-on-surface placeholder:text-[#555] font-body-md" id="lastName" placeholder="Ej: Rossi" type="text"/>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-label-bold text-label-bold text-on-surface-variant" for="email">Email</label>
+<input class="input-field rounded-lg px-4 py-3 text-on-surface placeholder:text-[#555] font-body-md" id="email" placeholder="tu@email.com" required="" type="email"/>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-label-bold text-label-bold text-on-surface-variant" for="password">Contraseña</label>
+<input class="input-field rounded-lg px-4 py-3 text-on-surface placeholder:text-[#555] font-body-md" id="password" placeholder="••••••••" required="" type="password"/>
+<!-- Password Strength Indicator -->
+<div class="flex gap-2 mt-2" id="strengthContainer">
+<div class="strength-bar" id="bar-1"></div>
+<div class="strength-bar" id="bar-2"></div>
+<div class="strength-bar" id="bar-3"></div>
+</div>
+<span class="text-[12px] font-label-bold mt-1 text-on-surface-variant uppercase tracking-widest opacity-60" id="strengthText">Seguridad</span>
+</div>
+<div class="mobile-bottom-action">
+<button class="w-full bg-primary-container hover:bg-[#ff8c3a] text-[#070707] font-bold py-4 rounded-lg uppercase tracking-wider text-label-bold transition-all flex items-center justify-center gap-2 active:scale-[0.98]" id="submitBtn" type="submit">
+<span>Crear cuenta</span>
+</button>
+<p class="mt-6 text-center font-body-md text-body-md text-on-surface-variant">
+                    ¿Ya tenés una cuenta? 
+                    <a class="text-primary font-bold hover:underline" href="#">Iniciá sesión</a>
+</p>
+</div>
+</form>
+<!-- Terms Footer (Desktop only or low prominence) -->
+<div class="mt-8 pt-6 border-t border-[#262626] text-center">
+<p class="text-[11px] text-[#555] font-label-bold uppercase leading-tight">
+                Al registrarte, aceptás nuestros <a class="underline" href="#">Términos de Servicio</a> y <a class="underline" href="#">Política de Privacidad</a>.
+            </p>
+</div>
+</div>
+<script>
+        const passwordInput = document.getElementById('password');
+        const bars = [
+            document.getElementById('bar-1'),
+            document.getElementById('bar-2'),
+            document.getElementById('bar-3')
+        ];
+        const strengthText = document.getElementById('strengthText');
+        const form = document.getElementById('registrationForm');
+        const submitBtn = document.getElementById('submitBtn');
+
+        passwordInput.addEventListener('input', function() {
+            const val = this.value;
+            let strength = 0;
+
+            if (val.length > 0) {
+                if (val.length < 6) strength = 1;
+                else if (val.length >= 6 && val.length < 10) strength = 2;
+                else strength = 3;
+
+                // Add complexity check (numbers/symbols)
+                const hasComplexity = /[0-9]/.test(val) && /[^A-Za-z0-9]/.test(val);
+                if (hasComplexity && strength < 3 && val.length >= 6) strength++;
+            }
+
+            // Reset bars
+            bars.forEach(bar => bar.style.backgroundColor = '#262626');
+
+            if (strength === 1) {
+                bars[0].style.backgroundColor = '#ffb4ab'; // error/red
+                strengthText.innerText = 'Débil';
+                strengthText.style.color = '#ffb4ab';
+            } else if (strength === 2) {
+                bars[0].style.backgroundColor = '#fde047'; // yellow
+                bars[1].style.backgroundColor = '#fde047';
+                strengthText.innerText = 'Media';
+                strengthText.style.color = '#fde047';
+            } else if (strength === 3) {
+                bars[0].style.backgroundColor = '#86efac'; // green
+                bars[1].style.backgroundColor = '#86efac';
+                bars[2].style.backgroundColor = '#86efac';
+                strengthText.innerText = 'Fuerte';
+                strengthText.style.color = '#86efac';
+            } else {
+                strengthText.innerText = 'Seguridad';
+                strengthText.style.color = '';
+            }
+        });
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const btnSpan = submitBtn.querySelector('span');
+            const originalText = btnSpan.innerText;
+            
+            // Loading State
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
+            btnSpan.innerText = 'Procesando...';
+            
+            // Add spinner
+            const spinner = document.createElement('div');
+            spinner.className = 'loading-spinner';
+            submitBtn.prepend(spinner);
+
+            // Simulate API call
+            setTimeout(() => {
+                spinner.remove();
+                btnSpan.innerText = '¡Cuenta Creada!';
+                submitBtn.classList.remove('bg-primary-container');
+                submitBtn.classList.add('bg-green-500');
+                
+                setTimeout(() => {
+                    // Reset or Redirect
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-80', 'cursor-not-allowed', 'bg-green-500');
+                    submitBtn.classList.add('bg-primary-container');
+                    btnSpan.innerText = originalText;
+                }, 2000);
+            }, 2000);
+        });
+    </script>
+</body></html>

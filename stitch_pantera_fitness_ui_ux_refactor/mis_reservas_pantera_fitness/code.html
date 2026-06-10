@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mis Reservas | Pantera Fitness</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Anybody:wght@700;800&amp;family=Hanken+Grotesk:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-container": "#ff7a1a",
+                    "inverse-primary": "#9c4500",
+                    "outline-variant": "#584236",
+                    "on-primary-fixed": "#331200",
+                    "primary": "#ffb68e",
+                    "on-tertiary-fixed-variant": "#004c6e",
+                    "on-primary-fixed-variant": "#773300",
+                    "surface-container-high": "#2a2a2a",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "tertiary": "#8aceff",
+                    "surface-container-lowest": "#0e0e0e",
+                    "secondary": "#c8c6c5",
+                    "inverse-on-surface": "#313030",
+                    "secondary-container": "#474746",
+                    "primary-fixed": "#ffdbca",
+                    "on-secondary-fixed-variant": "#474746",
+                    "inverse-surface": "#e5e2e1",
+                    "background": "#070707",
+                    "primary-fixed-dim": "#ffb68e",
+                    "outline": "#a78b7d",
+                    "on-surface-variant": "#e0c0b1",
+                    "on-error": "#690005",
+                    "tertiary-container": "#00aaf2",
+                    "on-secondary-fixed": "#1c1b1b",
+                    "tertiary-fixed-dim": "#8aceff",
+                    "on-tertiary-container": "#003b57",
+                    "on-surface": "#e5e2e1",
+                    "tertiary-fixed": "#c9e6ff",
+                    "on-secondary-container": "#b7b4b4",
+                    "on-background": "#e5e2e1",
+                    "error-container": "#93000a",
+                    "error": "#ffb4ab",
+                    "on-primary": "#542200",
+                    "on-tertiary": "#00344e",
+                    "on-error-container": "#ffdad6",
+                    "surface-bright": "#3a3939",
+                    "surface": "#131313",
+                    "on-tertiary-fixed": "#001e2f",
+                    "secondary-fixed": "#e5e2e1",
+                    "surface-container-highest": "#353534",
+                    "surface-tint": "#ffb68e",
+                    "surface-dim": "#131313",
+                    "surface-container": "#201f1f",
+                    "on-secondary": "#313030",
+                    "on-primary-container": "#5e2700",
+                    "surface-variant": "#353534",
+                    "surface-container-low": "#1c1b1b"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "metric-gap": "1rem",
+                    "margin-mobile": "1rem",
+                    "margin-desktop": "2.5rem",
+                    "container-max": "1200px",
+                    "gutter": "1.5rem",
+                    "auth-card-width": "440px"
+            },
+            "fontFamily": {
+                    "label-bold": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"],
+                    "display-lg-mobile": ["Anybody"],
+                    "display-lg": ["Anybody"],
+                    "body-lg": ["Hanken Grotesk"],
+                    "headline-md": ["Anybody"]
+            },
+            "fontSize": {
+                    "label-bold": ["14px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "display-lg-mobile": ["36px", {"lineHeight": "1.1", "fontWeight": "800"}],
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #070707;
+            color: #e5e2e1;
+            font-family: 'Hanken Grotesk', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .reservation-card {
+            background-color: #171717;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tab-active {
+            background-color: rgba(255, 122, 26, 0.15);
+            border: 1px solid #ff7a1a;
+            color: #ff7a1a;
+        }
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #070707; }
+        ::-webkit-scrollbar-thumb { background: #262626; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-50 bg-background border-b border-outline-variant flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-primary-container flex items-center justify-center font-display-lg text-headline-md text-on-background font-bold rounded-sm">PF</div>
+<h1 class="font-display-lg text-headline-md uppercase text-primary-container hidden md:block">Pantera Fitness</h1>
+</div>
+<div class="flex items-center gap-6">
+<span class="material-symbols-outlined text-secondary cursor-pointer hover:text-primary transition-colors active:scale-95" data-icon="search">search</span>
+<span class="material-symbols-outlined text-secondary cursor-pointer hover:text-primary transition-colors active:scale-95" data-icon="notifications">notifications</span>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest border border-outline-variant overflow-hidden">
+<img alt="Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDM7LcS32EnPPqF6au5MUGlSGGJhzxQBi6ghgAfWmXFpbklSpMOhams9WYcRu6Z5rU8V-Fz4ZFUGQup7fbteXvh-cf9-KrLsZzV_hnDQZxh4AwPApdhcLbKlYrmxJFBl7H_f0shwsAtmMS4hI0jFipkwVhgLv7kDTUZd-KkDK9pntvd8wwKYIpOdkN3YQfvMOTzAydTOauzYbPGphfwNU-9MNetcXEsh6yqQVjeD_6sdQCWn298_sirmwtqR_nJgSQZet2ctg1eseI6"/>
+</div>
+</div>
+</header>
+<!-- Side Navigation Bar (Desktop) -->
+<nav class="fixed left-0 top-0 h-full w-64 hidden lg:flex flex-col py-8 gap-metric-gap bg-surface border-r border-outline-variant pt-24">
+<div class="flex items-center px-8 mb-4">
+<div>
+<p class="font-label-bold text-label-bold uppercase text-primary-container">Dashboard</p>
+<p class="text-xs text-secondary">Entrená con propósito</p>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-4 px-8 py-3 text-secondary hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-bold text-label-bold uppercase">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-8 py-3 text-secondary hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span class="font-label-bold text-label-bold uppercase">Classes</span>
+</a>
+<a class="flex items-center gap-4 px-8 py-3 text-primary-container border-l-4 border-primary-container bg-surface-container-high" href="#">
+<span class="material-symbols-outlined" data-icon="event_available">event_available</span>
+<span class="font-label-bold text-label-bold uppercase">Reservations</span>
+</a>
+<a class="flex items-center gap-4 px-8 py-3 text-secondary hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-bold text-label-bold uppercase">Metrics</span>
+</a>
+<a class="flex items-center gap-4 px-8 py-3 text-secondary hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-bold text-label-bold uppercase">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="pt-24 pb-32 lg:pl-72 px-margin-mobile md:px-margin-desktop min-h-screen">
+<header class="mb-8">
+<h2 class="font-display-lg text-display-lg-mobile md:text-display-lg uppercase text-on-surface mb-2">Mis Reservas</h2>
+<p class="text-secondary font-body-md">Gestioná tus próximas clases y revisá tu historial de entrenamiento.</p>
+</header>
+<!-- Filter Tabs -->
+<div class="flex overflow-x-auto pb-4 gap-3 no-scrollbar mb-8 sticky top-16 bg-background/80 backdrop-blur-md z-40 py-2">
+<button class="tab-btn px-6 py-2 rounded-full font-label-bold text-label-bold uppercase transition-all whitespace-nowrap tab-active" onclick="filterReservations('TODAS')">
+                TODAS
+            </button>
+<button class="tab-btn px-6 py-2 rounded-full font-label-bold text-label-bold uppercase transition-all whitespace-nowrap bg-surface-container border border-outline-variant text-secondary hover:bg-surface-container-high" onclick="filterReservations('CONFIRMADAS')">
+                CONFIRMADAS
+            </button>
+<button class="tab-btn px-6 py-2 rounded-full font-label-bold text-label-bold uppercase transition-all whitespace-nowrap bg-surface-container border border-outline-variant text-secondary hover:bg-surface-container-high" onclick="filterReservations('EN ESPERA')">
+                EN ESPERA
+            </button>
+<button class="tab-btn px-6 py-2 rounded-full font-label-bold text-label-bold uppercase transition-all whitespace-nowrap bg-surface-container border border-outline-variant text-secondary hover:bg-surface-container-high" onclick="filterReservations('HISTORIAL')">
+                HISTORIAL
+            </button>
+</div>
+<!-- Reservation List Container -->
+<div class="flex flex-col gap-4 max-w-4xl" id="reservation-list">
+<!-- Card: Confirmada -->
+<div class="reservation-card border-l-4 border-[#4ADE80] p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 group" data-type="CONFIRMADAS">
+<div class="flex gap-4 items-center">
+<div class="w-14 h-14 bg-surface-container-high flex flex-col items-center justify-center rounded-lg border border-outline-variant">
+<span class="text-xs font-bold text-primary-container">OCT</span>
+<span class="text-xl font-bold">24</span>
+</div>
+<div>
+<h4 class="font-headline-md text-lg text-on-surface uppercase">Crossfit Advanced</h4>
+<div class="flex items-center gap-3 text-secondary text-sm mt-1">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span> 18:00 - 19:30</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm" data-icon="person">person</span> Coach: Marcos R.</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3 w-full md:w-auto mt-4 md:mt-0 action-container">
+<span class="px-3 py-1 bg-[#4ADE80]/10 text-[#4ADE80] text-[10px] font-bold uppercase tracking-wider rounded border border-[#4ADE80]/20">Confirmada</span>
+<button class="ml-auto md:ml-0 text-error font-label-bold text-sm uppercase hover:underline" onclick="toggleCancelPrompt(this)">Cancelar</button>
+</div>
+<!-- Cancellation Confirm (Hidden) -->
+<div class="cancel-confirm hidden w-full md:w-auto flex-col md:flex-row items-center gap-4 bg-error-container/20 p-3 rounded border border-error/20">
+<p class="text-xs font-bold text-error uppercase">¿Confirmar cancelación?</p>
+<div class="flex gap-4">
+<button class="text-error font-bold text-sm uppercase" onclick="confirmCancellation(this)">Sí, cancelar</button>
+<button class="text-secondary font-bold text-sm uppercase opacity-70" onclick="toggleCancelPrompt(this, true)">No, mantener</button>
+</div>
+</div>
+</div>
+<!-- Card: En Espera -->
+<div class="reservation-card border-l-4 border-[#FACC15] p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" data-type="EN ESPERA">
+<div class="flex gap-4 items-center">
+<div class="w-14 h-14 bg-surface-container-high flex flex-col items-center justify-center rounded-lg border border-outline-variant">
+<span class="text-xs font-bold text-primary-container">OCT</span>
+<span class="text-xl font-bold">25</span>
+</div>
+<div>
+<h4 class="font-headline-md text-lg text-on-surface uppercase">Weightlifting 101</h4>
+<div class="flex items-center gap-3 text-secondary text-sm mt-1">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span> 09:00 - 10:30</span>
+<span class="text-[#FACC15] font-bold">Posición en lista de espera: #3</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3 w-full md:w-auto action-container">
+<span class="px-3 py-1 bg-[#FACC15]/10 text-[#FACC15] text-[10px] font-bold uppercase tracking-wider rounded border border-[#FACC15]/20">En Espera</span>
+<button class="ml-auto md:ml-0 text-error font-label-bold text-sm uppercase hover:underline" onclick="toggleCancelPrompt(this)">Cancelar</button>
+</div>
+<div class="cancel-confirm hidden w-full md:w-auto flex-col md:flex-row items-center gap-4 bg-error-container/20 p-3 rounded border border-error/20">
+<p class="text-xs font-bold text-error uppercase">¿Confirmar cancelación?</p>
+<div class="flex gap-4">
+<button class="text-error font-bold text-sm uppercase" onclick="confirmCancellation(this)">Sí, cancelar</button>
+<button class="text-secondary font-bold text-sm uppercase opacity-70" onclick="toggleCancelPrompt(this, true)">No, mantener</button>
+</div>
+</div>
+</div>
+<!-- Card: Historial - Asistida -->
+<div class="reservation-card border-l-4 border-[#4ADE80]/60 opacity-60 p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" data-type="HISTORIAL">
+<div class="flex gap-4 items-center">
+<div class="w-14 h-14 bg-surface-container-high flex flex-col items-center justify-center rounded-lg border border-outline-variant">
+<span class="text-xs font-bold text-primary-container">OCT</span>
+<span class="text-xl font-bold">20</span>
+</div>
+<div>
+<h4 class="font-headline-md text-lg text-on-surface uppercase">HIIT Cardio</h4>
+<div class="flex items-center gap-3 text-secondary text-sm mt-1">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm" data-icon="done_all">done_all</span> Clase finalizada</span>
+</div>
+</div>
+</div>
+<div>
+<span class="px-3 py-1 bg-[#4ADE80]/5 text-[#4ADE80] text-[10px] font-bold uppercase tracking-wider rounded">Asistida</span>
+</div>
+</div>
+<!-- Card: Historial - Ausente -->
+<div class="reservation-card border-l-4 border-[#EF4444] opacity-60 p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" data-type="HISTORIAL">
+<div class="flex gap-4 items-center">
+<div class="w-14 h-14 bg-surface-container-high flex flex-col items-center justify-center rounded-lg border border-outline-variant">
+<span class="text-xs font-bold text-primary-container">OCT</span>
+<span class="text-xl font-bold">18</span>
+</div>
+<div>
+<h4 class="font-headline-md text-lg text-on-surface uppercase">Boxeo Recreativo</h4>
+<div class="flex items-center gap-3 text-secondary text-sm mt-1">
+<span class="flex items-center gap-1 text-error"><span class="material-symbols-outlined text-sm" data-icon="close">close</span> No asistió</span>
+</div>
+</div>
+</div>
+<div>
+<span class="px-3 py-1 bg-[#EF4444]/5 text-[#EF4444] text-[10px] font-bold uppercase tracking-wider rounded">Ausente</span>
+</div>
+</div>
+<!-- Card: Historial - Cancelada -->
+<div class="reservation-card border-l-4 border-outline p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 opacity-60" data-type="HISTORIAL">
+<div class="flex gap-4 items-center">
+<div class="w-14 h-14 bg-surface-container-high flex flex-col items-center justify-center rounded-lg border border-outline-variant">
+<span class="text-xs font-bold text-secondary">OCT</span>
+<span class="text-xl font-bold">15</span>
+</div>
+<div>
+<h4 class="font-headline-md text-lg text-on-surface uppercase">Functional Training</h4>
+<div class="flex items-center gap-3 text-secondary text-sm mt-1">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm" data-icon="block">block</span> Cancelada por usuario</span>
+</div>
+</div>
+</div>
+<div>
+<span class="px-3 py-1 bg-surface-container text-secondary text-[10px] font-bold uppercase tracking-wider rounded">Cancelada</span>
+</div>
+</div>
+</div>
+<!-- Empty State (Hidden by default) -->
+<div class="hidden flex-col items-center justify-center py-20 text-center" id="empty-state">
+<span class="material-symbols-outlined text-6xl text-surface-container-highest mb-4" data-icon="event_busy">event_busy</span>
+<h3 class="font-headline-md text-2xl uppercase text-on-surface mb-2">No hay reservas</h3>
+<p class="text-secondary max-w-sm mb-8">Parece que no tenés reservas activas en esta categoría. ¡Agendá tu próxima clase hoy!</p>
+<button class="bg-primary-container text-on-primary-fixed font-bold py-3 px-8 uppercase tracking-widest text-sm hover:scale-105 active:scale-95 transition-transform">
+                Reservar Clase
+            </button>
+</div>
+</main>
+<!-- Bottom Navigation Bar (Mobile) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 pb-safe px-4 bg-surface dark:bg-surface-container-low border-t border-outline-variant rounded-t-xl lg:hidden">
+<a class="flex flex-col items-center justify-center text-secondary" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-bold text-[10px] uppercase mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary" href="#">
+<span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>
+<span class="font-label-bold text-[10px] uppercase mt-1">Classes</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary-container" href="#">
+<span class="material-symbols-outlined" data-icon="book_online" style="font-variation-settings: 'FILL' 1;">book_online</span>
+<span class="font-label-bold text-[10px] uppercase mt-1 font-bold">Booking</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-bold text-[10px] uppercase mt-1">Profile</span>
+</a>
+</nav>
+<script>
+        function filterReservations(type) {
+            // Update tabs UI
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('tab-active', 'bg-surface-container', 'border', 'border-outline-variant', 'text-secondary');
+                if (btn.innerText.trim() === type) {
+                    btn.classList.add('tab-active');
+                } else {
+                    btn.classList.add('bg-surface-container', 'border', 'border-outline-variant', 'text-secondary');
+                }
+            });
+
+            // Filter cards
+            const cards = document.querySelectorAll('.reservation-card');
+            let visibleCount = 0;
+            
+            cards.forEach(card => {
+                const cardType = card.getAttribute('data-type');
+                if (type === 'TODAS' || cardType === type) {
+                    card.classList.remove('hidden');
+                    card.classList.add('flex');
+                    visibleCount++;
+                } else {
+                    card.classList.add('hidden');
+                    card.classList.remove('flex');
+                }
+            });
+
+            // Show empty state if needed
+            const emptyState = document.getElementById('empty-state');
+            const reservationList = document.getElementById('reservation-list');
+            if (visibleCount === 0) {
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
+                reservationList.classList.add('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                emptyState.classList.remove('flex');
+                reservationList.classList.remove('hidden');
+            }
+        }
+
+        function toggleCancelPrompt(btn, revert = false) {
+            const card = btn.closest('.reservation-card');
+            const actionContainer = card.querySelector('.action-container');
+            const cancelConfirm = card.querySelector('.cancel-confirm');
+
+            if (revert) {
+                actionContainer.classList.remove('hidden');
+                actionContainer.classList.add('flex');
+                cancelConfirm.classList.add('hidden');
+                cancelConfirm.classList.remove('flex');
+            } else {
+                actionContainer.classList.add('hidden');
+                actionContainer.classList.remove('flex');
+                cancelConfirm.classList.remove('hidden');
+                cancelConfirm.classList.add('flex');
+            }
+        }
+
+        function confirmCancellation(btn) {
+            const card = btn.closest('.reservation-card');
+            card.style.transform = 'scale(0.95)';
+            card.style.opacity = '0';
+            setTimeout(() => {
+                card.remove();
+                // Check if last card removed
+                const remaining = document.querySelectorAll(`.reservation-card:not(.hidden)`);
+                if (remaining.length === 0) {
+                    filterReservations(document.querySelector('.tab-active').innerText.trim());
+                }
+            }, 300);
+        }
+    </script>
+</body></html>

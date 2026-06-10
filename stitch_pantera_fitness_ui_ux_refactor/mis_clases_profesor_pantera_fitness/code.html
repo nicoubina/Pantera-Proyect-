@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Clases Asignadas - Pantera Fitness</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Anybody:wght@700;800&amp;family=Hanken+Grotesk:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            background-color: #070707;
+            color: #e5e2e1;
+            font-family: 'Hanken Grotesk', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .brand-mark {
+            width: 40px;
+            height: 40px;
+            background-color: #ff7a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Anybody', sans-serif;
+            font-weight: 800;
+            color: #070707;
+        }
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #171717;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #262626;
+        }
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .collapsible-active .collapsible-content {
+            max-height: 500px;
+        }
+        .rotate-icon {
+            transition: transform 0.3s ease;
+        }
+        .collapsible-active .rotate-icon {
+            transform: rotate(180deg);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary-container": "#ff7a1a",
+                      "inverse-primary": "#9c4500",
+                      "outline-variant": "#584236",
+                      "on-primary-fixed": "#331200",
+                      "primary": "#ffb68e",
+                      "on-tertiary-fixed-variant": "#004c6e",
+                      "on-primary-fixed-variant": "#773300",
+                      "surface-container-high": "#2a2a2a",
+                      "secondary-fixed-dim": "#c8c6c5",
+                      "tertiary": "#8aceff",
+                      "surface-container-lowest": "#0e0e0e",
+                      "secondary": "#c8c6c5",
+                      "inverse-on-surface": "#313030",
+                      "secondary-container": "#474746",
+                      "primary-fixed": "#ffdbca",
+                      "on-secondary-fixed-variant": "#474746",
+                      "inverse-surface": "#e5e2e1",
+                      "background": "#070707",
+                      "primary-fixed-dim": "#ffb68e",
+                      "outline": "#a78b7d",
+                      "on-surface-variant": "#e0c0b1",
+                      "on-error": "#690005",
+                      "tertiary-container": "#00aaf2",
+                      "on-secondary-fixed": "#1c1b1b",
+                      "tertiary-fixed-dim": "#8aceff",
+                      "on-tertiary-container": "#003b57",
+                      "on-surface": "#e5e2e1",
+                      "tertiary-fixed": "#c9e6ff",
+                      "on-secondary-container": "#b7b4b4",
+                      "on-background": "#e5e2e1",
+                      "error-container": "#93000a",
+                      "error": "#ffb4ab",
+                      "on-primary": "#542200",
+                      "on-tertiary": "#00344e",
+                      "on-error-container": "#ffdad6",
+                      "surface-bright": "#3a3939",
+                      "surface": "#171717",
+                      "on-tertiary-fixed": "#001e2f",
+                      "secondary-fixed": "#e5e2e1",
+                      "surface-container-highest": "#353534",
+                      "surface-tint": "#ffb68e",
+                      "surface-dim": "#131313",
+                      "surface-container": "#201f1f",
+                      "on-secondary": "#313030",
+                      "on-primary-container": "#5e2700",
+                      "surface-variant": "#353534",
+                      "surface-container-low": "#1c1b1b"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "metric-gap": "1rem",
+                      "margin-mobile": "1rem",
+                      "margin-desktop": "2.5rem",
+                      "container-max": "1200px",
+                      "gutter": "1.5rem",
+                      "auth-card-width": "440px"
+              },
+              "fontFamily": {
+                      "label-bold": ["Hanken Grotesk"],
+                      "body-md": ["Hanken Grotesk"],
+                      "display-lg-mobile": ["Anybody"],
+                      "display-lg": ["Anybody"],
+                      "body-lg": ["Hanken Grotesk"],
+                      "headline-md": ["Anybody"]
+              },
+              "fontSize": {
+                      "label-bold": ["14px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "display-lg-mobile": ["36px", {"lineHeight": "1.1", "fontWeight": "800"}],
+                      "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="bg-background">
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 w-full z-50 bg-background border-b border-outline-variant flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16">
+<div class="flex items-center gap-4">
+<div class="brand-mark">PF</div>
+<h1 class="font-display-lg text-headline-md uppercase text-primary-container">Pantera Fitness</h1>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden md:flex gap-8">
+<span class="text-primary-container font-bold font-label-bold uppercase cursor-pointer transition-colors hover:text-primary">Clases</span>
+<span class="text-secondary dark:text-secondary-fixed-dim font-label-bold uppercase cursor-pointer transition-colors hover:text-primary">Métricas</span>
+<span class="text-secondary dark:text-secondary-fixed-dim font-label-bold uppercase cursor-pointer transition-colors hover:text-primary">Ajustes</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface cursor-pointer active:scale-95 transition-transform">search</span>
+<span class="material-symbols-outlined text-on-surface cursor-pointer active:scale-95 transition-transform">notifications</span>
+<div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden">
+<img alt="User profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZvsDTJeVBClhV0M7xVLUfMI-Tt1K7K9EKxHL5mZuyrqF5ogREFAydtBa41YSaoFpdez-A2WX4-LXzCGNXxoIzuo-69HIXZKY9Vd1qAVyy3mIpTcpLZN-_fDNOBgnH6nD6QTVs1uvxDs_k1cnWBWn8rAQeZPbul7BqU-s2pXAbXI9DE5rSvuofycHfTj-JGB-eWelCADpuMNJcIwGgZ2sEMzADmmgct7WnBxjvrUe79xl_podDG3JGX-PH0KDFeUd1jXa4x7yMQb82"/>
+</div>
+</div>
+</div>
+</header>
+<!-- SideNavBar Shell (Desktop) -->
+<nav class="fixed left-0 top-0 h-full w-64 hidden lg:flex flex-col py-8 gap-metric-gap bg-surface border-r border-outline-variant z-40 mt-16">
+<div class="px-6 mb-4">
+<h2 class="font-label-bold text-label-bold uppercase text-primary-container">Dashboard Profesor</h2>
+<p class="text-secondary text-xs">Entrená con propósito</p>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-3 py-4 text-primary-container border-l-4 border-primary-container pl-4 bg-surface-container-high cursor-pointer duration-200">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-bold text-label-bold uppercase">Dashboard</span>
+</div>
+<div class="flex items-center gap-3 py-4 text-secondary dark:text-secondary-fixed-dim pl-5 hover:bg-surface-container-high transition-all cursor-pointer duration-200">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="font-label-bold text-label-bold uppercase">Clases</span>
+</div>
+<div class="flex items-center gap-3 py-4 text-secondary dark:text-secondary-fixed-dim pl-5 hover:bg-surface-container-high transition-all cursor-pointer duration-200">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-bold text-label-bold uppercase">Métricas</span>
+</div>
+<div class="flex items-center gap-3 py-4 text-secondary dark:text-secondary-fixed-dim pl-5 hover:bg-surface-container-high transition-all cursor-pointer duration-200">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-bold text-label-bold uppercase">Settings</span>
+</div>
+</div>
+<div class="mt-auto px-6">
+<button class="w-full bg-primary-container text-on-primary-container font-label-bold text-label-bold uppercase py-3 rounded-lg active:scale-95 transition-transform">
+                Nueva Clase
+            </button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="lg:ml-64 pt-24 pb-32 px-margin-mobile md:px-margin-desktop min-h-screen">
+<div class="max-w-container-max mx-auto">
+<!-- Summary Header -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-metric-gap mb-10">
+<div class="bg-surface p-6 border border-outline-variant rounded-lg flex items-center justify-between">
+<div>
+<p class="text-secondary font-label-bold text-label-bold uppercase mb-1">Clases hoy</p>
+<h3 class="font-display-lg text-headline-md text-on-surface">06</h3>
+</div>
+<div class="w-12 h-12 rounded bg-primary-container/10 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-3xl">fitness_center</span>
+</div>
+</div>
+<div class="bg-surface p-6 border border-outline-variant rounded-lg flex items-center justify-between">
+<div>
+<p class="text-secondary font-label-bold text-label-bold uppercase mb-1">Alumnos totales inscriptos</p>
+<h3 class="font-display-lg text-headline-md text-on-surface">142</h3>
+</div>
+<div class="w-12 h-12 rounded bg-primary-container/10 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-3xl" data-weight="fill">group</span>
+</div>
+</div>
+</section>
+<!-- Section Title -->
+<div class="flex items-center justify-between mb-6">
+<h2 class="font-headline-md text-headline-md text-on-surface">Próximas Clases</h2>
+<div class="flex gap-2">
+<button class="p-2 bg-surface-container-high border border-outline-variant rounded text-on-surface-variant active:scale-95 transition-transform">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+</div>
+</div>
+<!-- Class Grid -->
+<div class="grid grid-cols-1 gap-6">
+<!-- Class Card - High Occupancy (Red) -->
+<div class="bg-surface border border-outline-variant border-l-4 border-l-red-500 rounded-lg overflow-hidden group">
+<div class="p-6">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+<div>
+<h4 class="font-headline-md text-headline-md text-on-surface mb-1 uppercase tracking-tight">CrossFit Advanced</h4>
+<div class="flex items-center gap-3 text-secondary font-label-bold text-label-bold">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">calendar_today</span> Hoy, 18 May</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">schedule</span> 18:00 - 19:30</span>
+</div>
+</div>
+<div class="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 border border-red-500/20 rounded-full text-red-500 font-label-bold text-xs uppercase">
+<span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                                Cupo Lleno
+                            </div>
+</div>
+<!-- Occupancy Progress -->
+<div class="mb-6">
+<div class="flex justify-between items-end mb-2">
+<span class="text-secondary text-sm font-label-bold uppercase">Ocupación</span>
+<span class="text-on-surface font-bold">20 / 20</span>
+</div>
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-red-500 w-full"></div>
+</div>
+</div>
+<!-- Collapsible Section -->
+<div class="collapsible-wrapper border-t border-outline-variant pt-4">
+<button class="w-full flex items-center justify-between text-secondary hover:text-on-surface transition-colors" onclick="toggleCollapsible(this)">
+<span class="font-label-bold text-label-bold uppercase">Ver alumnos (20)</span>
+<span class="material-symbols-outlined rotate-icon">expand_more</span>
+</button>
+<div class="collapsible-content">
+<div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+<!-- Student Item -->
+<div class="flex items-center justify-between p-3 bg-background rounded border border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center font-bold text-xs text-primary">MS</div>
+<span class="text-on-surface text-sm font-medium">Marcos S.</span>
+</div>
+<div class="flex items-center gap-2 text-[10px] font-bold uppercase text-green-500">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                            Asistida
+                                        </div>
+</div>
+<!-- Student Item -->
+<div class="flex items-center justify-between p-3 bg-background rounded border border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center font-bold text-xs text-primary">LR</div>
+<span class="text-on-surface text-sm font-medium">Lucía R.</span>
+</div>
+<div class="flex items-center gap-2 text-[10px] font-bold uppercase text-green-500">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                            Confirmada
+                                        </div>
+</div>
+<!-- Student Item -->
+<div class="flex items-center justify-between p-3 bg-background rounded border border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center font-bold text-xs text-primary">JP</div>
+<span class="text-on-surface text-sm font-medium">Juan P.</span>
+</div>
+<div class="flex items-center gap-2 text-[10px] font-bold uppercase text-red-500">
+<span class="w-2 h-2 rounded-full bg-red-500"></span>
+                                            Ausente
+                                        </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Class Card - Medium Occupancy (Yellow) -->
+<div class="bg-surface border border-outline-variant border-l-4 border-l-yellow-500 rounded-lg overflow-hidden group">
+<div class="p-6">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+<div>
+<h4 class="font-headline-md text-headline-md text-on-surface mb-1 uppercase tracking-tight">Boxeo Funcional</h4>
+<div class="flex items-center gap-3 text-secondary font-label-bold text-label-bold">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">calendar_today</span> Mañana, 19 May</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">schedule</span> 09:00 - 10:30</span>
+</div>
+</div>
+<div class="flex items-center gap-2 px-3 py-1.5 bg-yellow-500/10 border border-yellow-500/20 rounded-full text-yellow-500 font-label-bold text-xs uppercase">
+<span class="w-2 h-2 rounded-full bg-yellow-500"></span>
+                                Cupos Limitados
+                            </div>
+</div>
+<!-- Occupancy Progress -->
+<div class="mb-6">
+<div class="flex justify-between items-end mb-2">
+<span class="text-secondary text-sm font-label-bold uppercase">Ocupación</span>
+<span class="text-on-surface font-bold">12 / 15</span>
+</div>
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-yellow-500 w-[80%]"></div>
+</div>
+</div>
+<!-- Collapsible Section -->
+<div class="collapsible-wrapper border-t border-outline-variant pt-4">
+<button class="w-full flex items-center justify-between text-secondary hover:text-on-surface transition-colors" onclick="toggleCollapsible(this)">
+<span class="font-label-bold text-label-bold uppercase">Ver alumnos (12)</span>
+<span class="material-symbols-outlined rotate-icon">expand_more</span>
+</button>
+<div class="collapsible-content">
+<div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+<div class="flex items-center justify-between p-3 bg-background rounded border border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center font-bold text-xs text-primary">AM</div>
+<span class="text-on-surface text-sm font-medium">Ana M.</span>
+</div>
+<div class="flex items-center gap-2 text-[10px] font-bold uppercase text-yellow-500">
+<span class="w-2 h-2 rounded-full bg-yellow-500"></span>
+                                            En Espera
+                                        </div>
+</div>
+<div class="flex items-center justify-between p-3 bg-background rounded border border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center font-bold text-xs text-primary">FR</div>
+<span class="text-on-surface text-sm font-medium">Felipe R.</span>
+</div>
+<div class="flex items-center gap-2 text-[10px] font-bold uppercase text-green-500">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                            Confirmada
+                                        </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Class Card - Low Occupancy (Green) -->
+<div class="bg-surface border border-outline-variant border-l-4 border-l-green-500 rounded-lg overflow-hidden group">
+<div class="p-6">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+<div>
+<h4 class="font-headline-md text-headline-md text-on-surface mb-1 uppercase tracking-tight">HIIT Training</h4>
+<div class="flex items-center gap-3 text-secondary font-label-bold text-label-bold">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">calendar_today</span> 20 May</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">schedule</span> 10:00 - 11:00</span>
+</div>
+</div>
+<div class="flex items-center gap-2 px-3 py-1.5 bg-green-500/10 border border-green-500/20 rounded-full text-green-500 font-label-bold text-xs uppercase">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                Disponible
+                            </div>
+</div>
+<!-- Occupancy Progress -->
+<div class="mb-6">
+<div class="flex justify-between items-end mb-2">
+<span class="text-secondary text-sm font-label-bold uppercase">Ocupación</span>
+<span class="text-on-surface font-bold">5 / 25</span>
+</div>
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-green-500 w-[20%]"></div>
+</div>
+</div>
+<!-- Collapsible Section -->
+<div class="collapsible-wrapper border-t border-outline-variant pt-4">
+<button class="w-full flex items-center justify-between text-secondary hover:text-on-surface transition-colors" onclick="toggleCollapsible(this)">
+<span class="font-label-bold text-label-bold uppercase">Ver alumnos (5)</span>
+<span class="material-symbols-outlined rotate-icon">expand_more</span>
+</button>
+<div class="collapsible-content">
+<div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+<p class="text-secondary italic text-sm px-1">Cargando lista de alumnos registrados...</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar Shell (Mobile) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 pb-safe px-4 bg-surface border-t border-outline-variant lg:hidden rounded-t-xl shadow-lg">
+<div class="flex flex-col items-center justify-center text-primary-container active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-bold text-label-bold-mobile uppercase">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined">fitness_center</span>
+<span class="font-label-bold text-label-bold-mobile uppercase">Clases</span>
+</div>
+<div class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined">book_online</span>
+<span class="font-label-bold text-label-bold-mobile uppercase">Booking</span>
+</div>
+<div class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-bold text-label-bold-mobile uppercase">Profile</span>
+</div>
+</nav>
+<script>
+        function toggleCollapsible(btn) {
+            const wrapper = btn.closest('.collapsible-wrapper');
+            wrapper.classList.toggle('collapsible-active');
+        }
+
+        // Simple active state observer for nav (simulated)
+        document.querySelectorAll('nav div').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('nav div').forEach(i => {
+                    i.classList.remove('text-primary-container');
+                    i.classList.add('text-secondary');
+                });
+                this.classList.add('text-primary-container');
+                this.classList.remove('text-secondary');
+            });
+        });
+    </script>
+</body></html>

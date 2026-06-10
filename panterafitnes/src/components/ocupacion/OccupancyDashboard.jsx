@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import MetricCard from "@/components/common/MetricCard";
 import PageHeader from "@/components/common/PageHeader";
 import StatusPill from "@/components/common/StatusPill";
@@ -29,9 +30,11 @@ function OccupancyBlock({ item, large = false }) {
           {item.estado} - {item.personas}/{item.capacidad} personas
         </p>
       </div>
-      <strong>{item.porcentaje}%</strong>
+      <strong style={large ? { fontSize: "3rem", color: "var(--color-orange)" } : undefined}>
+        {item.porcentaje}%
+      </strong>
       <div className="progress-track" aria-hidden="true">
-        <span style={{ width: `${item.porcentaje}%` }} />
+        <span className="occupancy-bar" style={{ width: `${item.porcentaje}%` }} />
       </div>
     </article>
   );
@@ -39,6 +42,14 @@ function OccupancyBlock({ item, large = false }) {
 
 export default function OccupancyDashboard() {
   const { occupancy, classes } = useAppData();
+  const [lastUpdated, setLastUpdated] = useState("");
+  const [classesOpen, setClassesOpen] = useState(false);
+
+  useEffect(() => {
+    if (occupancy) {
+      setLastUpdated(new Date().toLocaleTimeString("es-AR"));
+    }
+  }, [occupancy]);
 
   if (!occupancy) {
     return (
@@ -50,11 +61,26 @@ export default function OccupancyDashboard() {
 
   return (
     <div className="stack">
-      <PageHeader
-        eyebrow="Ocupacion"
-        title="Mapa visual del gimnasio"
-        description="Los valores se actualizan automaticamente cada 10 segundos con datos simulados."
-      />
+      <div className="section-title-row">
+        <PageHeader
+          eyebrow="Ocupacion"
+          title="Mapa visual del gimnasio"
+          description="Los valores se actualizan automaticamente cada 10 segundos con datos simulados."
+        />
+        <div style={{ display: "grid", gap: 4, justifyItems: "end" }}>
+          <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: "0.72rem" }} className="muted">
+            <span className="material-symbols-outlined pulsing" style={{ fontSize: 14 }}>
+              update
+            </span>
+            Actualiza cada 10 seg
+          </span>
+          {lastUpdated ? (
+            <span className="muted" style={{ fontSize: "0.72rem" }}>
+              Última actualización: {lastUpdated}
+            </span>
+          ) : null}
+        </div>
+      </div>
 
       <section className="metric-grid">
         <MetricCard
@@ -90,26 +116,38 @@ export default function OccupancyDashboard() {
             <h3>Ocupacion por clase</h3>
             <p className="muted">Capacidad por clase: 20 personas.</p>
           </div>
+          <button
+            type="button"
+            className={`ghost-button small occupancy-toggle ${classesOpen ? "active" : ""}`}
+            onClick={() => setClassesOpen((open) => !open)}
+          >
+            Ver clases ({classes.length})
+            <span className="material-symbols-outlined rotate-icon" style={{ marginLeft: 6, verticalAlign: "middle" }}>
+              expand_more
+            </span>
+          </button>
         </div>
-        <div className="card-grid">
-          {classes.map((classItem) => {
-            const availability = getClassAvailability(classItem);
-            return (
-              <article className="mini-card" key={classItem.id}>
-                <div className="card-title-row">
-                  <h4>{classItem.nombre}</h4>
-                  <StatusPill tone={getTone(availability.nivel)}>{availability.estado}</StatusPill>
-                </div>
-                <p>
-                  {availability.nivel} - {classItem.cuposOcupados}/{classItem.cupoTotal} cupos
-                  ocupados
-                </p>
-                <p className="muted">
-                  {classItem.diaNombre} {classItem.hora} - {classItem.profesor}
-                </p>
-              </article>
-            );
-          })}
+        <div className={`occupancy-classes ${classesOpen ? "occupancy-classes-open" : ""} collapsible-content`}>
+          <div className="card-grid">
+            {classes.map((classItem) => {
+              const availability = getClassAvailability(classItem);
+              return (
+                <article className="mini-card" key={classItem.id}>
+                  <div className="card-title-row">
+                    <h4>{classItem.nombre}</h4>
+                    <StatusPill tone={getTone(availability.nivel)}>{availability.estado}</StatusPill>
+                  </div>
+                  <p>
+                    {availability.nivel} - {classItem.cuposOcupados}/{classItem.cupoTotal} cupos
+                    ocupados
+                  </p>
+                  <p className="muted">
+                    {classItem.diaNombre} {classItem.hora} - {classItem.profesor}
+                  </p>
+                </article>
+              );
+            })}
+          </div>
         </div>
       </section>
     </div>

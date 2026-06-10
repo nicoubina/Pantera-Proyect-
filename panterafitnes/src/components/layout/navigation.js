@@ -21,10 +21,28 @@ export function getNavigationItems(role) {
   const reservationsLabel = role === ROLES.CLIENTE ? "Mis reservas" : "Reservas";
 
   return [
-    { label: "Inicio", href: basePath },
-    { label: "Ocupacion", href: `${basePath}/ocupacion` },
-    { label: "Clases", href: `${basePath}/clases` },
-    { label: reservationsLabel, href: `${basePath}/reservas` },
-    { label: "Perfil", href: `${basePath}/perfil` }
+    { label: "Inicio", href: basePath, icon: "home" },
+    { label: "Ocupacion", href: `${basePath}/ocupacion`, icon: "monitoring" },
+    { label: "Clases", href: `${basePath}/clases`, icon: "fitness_center" },
+    { label: reservationsLabel, href: `${basePath}/reservas`, icon: "event_available" },
+    { label: "Perfil", href: `${basePath}/perfil`, icon: "person" }
   ];
 }
+
+export const pathLabels = {
+  "/cliente": "Inicio",
+  "/cliente/ocupacion": "Ocupación",
+  "/cliente/clases": "Clases",
+  "/cliente/reservas": "Mis Reservas",
+  "/cliente/perfil": "Perfil",
+  "/profesor": "Inicio",
+  "/profesor/ocupacion": "Ocupación",
+  "/profesor/clases": "Clases",
+  "/profesor/reservas": "Reservas",
+  "/profesor/perfil": "Perfil",
+  "/admin": "Dashboard",
+  "/admin/ocupacion": "Ocupación",
+  "/admin/clases": "Gestión de Clases",
+  "/admin/reservas": "Reservas",
+  "/admin/perfil": "Perfil"
+};
