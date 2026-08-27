@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gestión de Clases | Pantera Fitness</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Anybody:wght@700;800&amp;family=Hanken+Grotesk:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#ff7a1a",
+                        "inverse-primary": "#9c4500",
+                        "outline-variant": "#584236",
+                        "on-primary-fixed": "#331200",
+                        "primary": "#ffb68e",
+                        "on-tertiary-fixed-variant": "#004c6e",
+                        "on-primary-fixed-variant": "#773300",
+                        "surface-container-high": "#2a2a2a",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "tertiary": "#8aceff",
+                        "surface-container-lowest": "#0e0e0e",
+                        "secondary": "#c8c6c5",
+                        "inverse-on-surface": "#313030",
+                        "secondary-container": "#474746",
+                        "primary-fixed": "#ffdbca",
+                        "on-secondary-fixed-variant": "#474746",
+                        "inverse-surface": "#e5e2e1",
+                        "background": "#070707",
+                        "primary-fixed-dim": "#ffb68e",
+                        "outline": "#a78b7d",
+                        "on-surface-variant": "#e0c0b1",
+                        "on-error": "#690005",
+                        "tertiary-container": "#00aaf2",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "tertiary-fixed-dim": "#8aceff",
+                        "on-tertiary-container": "#003b57",
+                        "on-surface": "#e5e2e1",
+                        "tertiary-fixed": "#c9e6ff",
+                        "on-secondary-container": "#b7b4b4",
+                        "on-background": "#e5e2e1",
+                        "error-container": "#93000a",
+                        "error": "#ffb4ab",
+                        "on-primary": "#542200",
+                        "on-tertiary": "#00344e",
+                        "on-error-container": "#ffdad6",
+                        "surface-bright": "#3a3939",
+                        "surface": "#131313",
+                        "on-tertiary-fixed": "#001e2f",
+                        "secondary-fixed": "#e5e2e1",
+                        "surface-container-highest": "#353534",
+                        "surface-tint": "#ffb68e",
+                        "surface-dim": "#131313",
+                        "surface-container": "#201f1f",
+                        "on-secondary": "#313030",
+                        "on-primary-container": "#5e2700",
+                        "surface-variant": "#353534",
+                        "surface-container-low": "#1c1b1b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "metric-gap": "1rem",
+                        "margin-mobile": "1rem",
+                        "margin-desktop": "2.5rem",
+                        "container-max": "1200px",
+                        "gutter": "1.5rem",
+                        "auth-card-width": "440px"
+                    },
+                    "fontFamily": {
+                        "label-bold": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "display-lg-mobile": ["Anybody"],
+                        "display-lg": ["Anybody"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "headline-md": ["Anybody"]
+                    },
+                    "fontSize": {
+                        "label-bold": ["14px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg-mobile": ["36px", { "lineHeight": "1.1", "fontWeight": "800" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #070707;
+            color: #e5e2e1;
+            font-family: 'Hanken Grotesk', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .brand-mark {
+            width: 48px;
+            height: 48px;
+            background-color: #ff7a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Anybody', sans-serif;
+            font-weight: 800;
+            color: #070707;
+            flex-shrink: 0;
+        }
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+        }
+        .card-glow:hover {
+            border-color: rgba(255, 122, 26, 0.4);
+            box-shadow: 0 0 20px rgba(255, 122, 26, 0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #131313;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 2px;
+        }
+        @media (max-width: 1024px) {
+            .side-nav-offset { margin-left: 0; }
+        }
+        @media (min-width: 1024px) {
+            .side-nav-offset { margin-left: 16rem; }
+        }
+    </style>
+</head>
+<body class="custom-scrollbar">
+<!-- Sidebar Navigation (Mandatory Anchor) -->
+<nav class="fixed left-0 top-0 h-full w-64 hidden lg:flex flex-col bg-surface border-r border-outline-variant py-8 gap-metric-gap z-50">
+<div class="px-6 mb-8 flex items-center gap-4">
+<div class="brand-mark text-headline-md">PF</div>
+<div>
+<h1 class="font-display-lg text-primary-container text-xl leading-tight">Pantera Fitness</h1>
+<p class="text-secondary text-[10px] uppercase tracking-widest">Entrená con propósito</p>
+</div>
+</div>
+<div class="flex flex-col flex-1">
+<a class="flex items-center gap-4 py-3 px-6 text-secondary hover:bg-surface-container-high transition-all duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-bold text-label-bold uppercase">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 py-3 px-1 text-primary-container border-l-4 border-primary-container bg-surface-container-low transition-all duration-200" href="#">
+<div class="flex items-center gap-4 pl-5">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="font-label-bold text-label-bold uppercase">Classes</span>
+</div>
+</a>
+<a class="flex items-center gap-4 py-3 px-6 text-secondary hover:bg-surface-container-high transition-all duration-200" href="#">
+<span class="material-symbols-outlined">event_available</span>
+<span class="font-label-bold text-label-bold uppercase">Reservations</span>
+</a>
+<a class="flex items-center gap-4 py-3 px-6 text-secondary hover:bg-surface-container-high transition-all duration-200" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-bold text-label-bold uppercase">Metrics</span>
+</a>
+<a class="flex items-center gap-4 py-3 px-6 text-secondary hover:bg-surface-container-high transition-all duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-bold text-label-bold uppercase">Settings</span>
+</a>
+</div>
+<div class="px-6 mt-auto">
+<button class="w-full bg-primary-container text-[#070707] font-bold py-3 px-4 uppercase text-sm tracking-tighter active:scale-95 transition-transform">
+                New Reservation
+            </button>
+</div>
+</nav>
+<!-- Top App Bar (Mobile & Title Context) -->
+<header class="fixed top-0 w-full z-40 bg-background border-b border-outline-variant h-16 flex justify-between items-center px-margin-mobile md:px-margin-desktop lg:pl-72">
+<div class="flex items-center gap-4 lg:hidden">
+<div class="brand-mark text-lg">PF</div>
+</div>
+<h2 class="font-headline-md text-headline-md text-primary-container uppercase lg:block hidden">Gestión de Clases</h2>
+<h2 class="font-headline-md text-headline-md text-primary-container uppercase lg:hidden text-lg">Clases</h2>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-secondary cursor-pointer hover:text-primary transition-colors">search</span>
+<span class="material-symbols-outlined text-secondary cursor-pointer hover:text-primary transition-colors">notifications</span>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest border border-outline-variant overflow-hidden">
+<img alt="User profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKvCYn_r0Ak709KkMO1FYk07m-7pChpbKI10n_ROo2CpBwMaVeweFWuj7VK7yKxkRVQk2u5P-NFrGGse11Hj1YxqtfK2_7Q06g7f2nD_omxXZJr6sYB6jBMI5tgnQAIdOUe8-vXB79GQhZAezm68VhEP8_aH3fRGIail1sWVhfkh2MZNcmPA0ybBTz8tU1xl7yZj2yCtFHE1gFbfDEt2DhBWRTfm0BqKFE73asl-mIHorxUWxO2ziFkY1Pv2K2ce8LgWA6aTtIEgh6"/>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="side-nav-offset pt-24 pb-32 px-margin-mobile md:px-margin-desktop min-h-screen">
+<!-- Summary Top Metrics -->
+<div class="metric-grid mb-10">
+<div class="bg-surface p-6 border border-outline-variant transition-colors hover:border-primary-container/20">
+<p class="text-secondary font-label-bold text-xs uppercase mb-1">Total clases activas</p>
+<p class="font-display-lg text-display-lg text-primary-container">24</p>
+</div>
+<div class="bg-surface p-6 border border-outline-variant transition-colors hover:border-error/20 flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<p class="text-secondary font-label-bold text-xs uppercase mb-1">Cupo completo</p>
+<span class="bg-error-container text-on-error-container px-2 py-0.5 rounded text-[10px] font-bold">5 ALERTA</span>
+</div>
+<p class="font-display-lg text-display-lg text-error">05</p>
+</div>
+<div class="bg-surface p-6 border border-outline-variant transition-colors hover:border-primary/20">
+<p class="text-secondary font-label-bold text-xs uppercase mb-1">Alta ocupación (&gt;=80%)</p>
+<div class="flex items-baseline gap-2">
+<p class="font-display-lg text-display-lg text-primary">12</p>
+<span class="text-secondary text-xs">clases</span>
+</div>
+</div>
+</div>
+<!-- Filter Bar -->
+<div class="flex flex-wrap items-center gap-3 mb-8">
+<button class="px-6 py-2 rounded-full border border-primary-container bg-primary-container text-on-primary-container font-label-bold text-sm transition-all">
+                Todas las clases
+            </button>
+<button class="px-6 py-2 rounded-full border border-outline-variant text-secondary hover:border-secondary transition-all font-label-bold text-sm">
+                Solo completas
+            </button>
+<button class="px-6 py-2 rounded-full border border-outline-variant text-secondary hover:border-secondary transition-all font-label-bold text-sm">
+                Alta ocupación
+            </button>
+<div class="ml-auto hidden md:block">
+<span class="text-secondary text-sm">Actualizado hace 2 min</span>
+</div>
+</div>
+<!-- Classes Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+<!-- Card 1: Completa -->
+<div class="bg-surface border-2 border-error p-6 relative card-glow overflow-hidden">
+<div class="absolute top-4 right-4 bg-error text-on-error font-bold text-[10px] px-3 py-1 uppercase tracking-widest">
+                    COMPLETA
+                </div>
+<div class="flex flex-col gap-4">
+<div>
+<h3 class="font-headline-md text-xl text-on-surface uppercase mb-1 leading-tight">Functional Training</h3>
+<div class="flex items-center gap-2 text-secondary text-sm">
+<span class="material-symbols-outlined text-sm">person</span>
+<span>Prof. Marcos Soler</span>
+</div>
+<div class="flex items-center gap-2 text-secondary text-sm mt-1">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>Hoy, 18:30 - 19:30</span>
+</div>
+</div>
+<div class="mt-2">
+<div class="flex justify-between text-xs font-label-bold mb-2">
+<span class="text-error uppercase">Ocupación</span>
+<span class="text-on-surface">20/20 (100%)</span>
+</div>
+<div class="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-error transition-all duration-500" style="width: 100%"></div>
+</div>
+</div>
+<div class="flex justify-end pt-2">
+<span class="bg-error-container/20 text-error px-3 py-1 rounded-sm text-[10px] font-bold uppercase border border-error/30">
+                            Completa
+                        </span>
+</div>
+</div>
+</div>
+<!-- Card 2: Alta Ocupación -->
+<div class="bg-surface border-l-4 border-primary-container p-6 border-y border-r border-outline-variant card-glow">
+<div class="flex flex-col gap-4">
+<div>
+<h3 class="font-headline-md text-xl text-on-surface uppercase mb-1 leading-tight">CrossFit Advance</h3>
+<div class="flex items-center gap-2 text-secondary text-sm">
+<span class="material-symbols-outlined text-sm">person</span>
+<span>Prof. Elena Vazquez</span>
+</div>
+<div class="flex items-center gap-2 text-secondary text-sm mt-1">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>Hoy, 19:00 - 20:30</span>
+</div>
+</div>
+<div class="mt-2">
+<div class="flex justify-between text-xs font-label-bold mb-2">
+<span class="text-primary-container uppercase">Ocupación</span>
+<span class="text-on-surface">14/16 (87%)</span>
+</div>
+<div class="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary-container transition-all duration-500" style="width: 87%"></div>
+</div>
+</div>
+<div class="flex justify-end pt-2">
+<span class="bg-primary-container/20 text-primary-container px-3 py-1 rounded-sm text-[10px] font-bold uppercase border border-primary-container/30">
+                            Últimos cupos
+                        </span>
+</div>
+</div>
+</div>
+<!-- Card 3: Disponible -->
+<div class="bg-surface border-l-4 border-tertiary-container p-6 border-y border-r border-outline-variant card-glow">
+<div class="flex flex-col gap-4">
+<div>
+<h3 class="font-headline-md text-xl text-on-surface uppercase mb-1 leading-tight">Yoga Flow</h3>
+<div class="flex items-center gap-2 text-secondary text-sm">
+<span class="material-symbols-outlined text-sm">person</span>
+<span>Prof. Sofia Ruiz</span>
+</div>
+<div class="flex items-center gap-2 text-secondary text-sm mt-1">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>Mañana, 08:00 - 09:00</span>
+</div>
+</div>
+<div class="mt-2">
+<div class="flex justify-between text-xs font-label-bold mb-2">
+<span class="text-tertiary uppercase">Ocupación</span>
+<span class="text-on-surface">12/25 (48%)</span>
+</div>
+<div class="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-tertiary-container transition-all duration-500" style="width: 48%"></div>
+</div>
+</div>
+<div class="flex justify-end pt-2">
+<span class="bg-tertiary-container/20 text-tertiary-container px-3 py-1 rounded-sm text-[10px] font-bold uppercase border border-tertiary-container/30">
+                            Disponible
+                        </span>
+</div>
+</div>
+</div>
+<!-- Card 4: Alta Ocupación -->
+<div class="bg-surface border-l-4 border-primary-container p-6 border-y border-r border-outline-variant card-glow">
+<div class="flex flex-col gap-4">
+<div>
+<h3 class="font-headline-md text-xl text-on-surface uppercase mb-1 leading-tight">Boxing &amp; Cardio</h3>
+<div class="flex items-center gap-2 text-secondary text-sm">
+<span class="material-symbols-outlined text-sm">person</span>
+<span>Prof. Julian Ortiz</span>
+</div>
+<div class="flex items-center gap-2 text-secondary text-sm mt-1">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>Mañana, 10:00 - 11:30</span>
+</div>
+</div>
+<div class="mt-2">
+<div class="flex justify-between text-xs font-label-bold mb-2">
+<span class="text-primary-container uppercase">Ocupación</span>
+<span class="text-on-surface">18/20 (90%)</span>
+</div>
+<div class="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary-container transition-all duration-500" style="width: 90%"></div>
+</div>
+</div>
+<div class="flex justify-end pt-2">
+<span class="bg-primary-container/20 text-primary-container px-3 py-1 rounded-sm text-[10px] font-bold uppercase border border-primary-container/30">
+                            Últimos cupos
+                        </span>
+</div>
+</div>
+</div>
+<!-- Card 5: Completa -->
+<div class="bg-surface border-2 border-error p-6 relative card-glow overflow-hidden">
+<div class="absolute top-4 right-4 bg-error text-on-error font-bold text-[10px] px-3 py-1 uppercase tracking-widest">
+                    COMPLETA
+                </div>
+<div class="flex flex-col gap-4">
+<div>
+<h3 class="font-headline-md text-xl text-on-surface uppercase mb-1 leading-tight">HIIT Extreme</h3>
+<div class="flex items-center gap-2 text-secondary text-sm">
+<span class="material-symbols-outlined text-sm">person</span>
+<span>Prof. Valentina G.</span>
+</div>
+<div class="flex items-center gap-2 text-secondary text-sm mt-1">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>Mañana, 17:00 - 18:00</span>
+</div>
+</div>
+<div class="mt-2">
+<div class="flex justify-between text-xs font-label-bold mb-2">
+<span class="text-error uppercase">Ocupación</span>
+<span class="text-on-surface">15/15 (100%)</span>
+</div>
+<div class="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-error transition-all duration-500" style="width: 100%"></div>
+</div>
+</div>
+<div class="flex justify-end pt-2">
+<span class="bg-error-container/20 text-error px-3 py-1 rounded-sm text-[10px] font-bold uppercase border border-error/30">
+                            Completa
+                        </span>
+</div>
+</div>
+</div>
+<!-- Card 6: Disponible -->
+<div class="bg-surface border-l-4 border-tertiary-container p-6 border-y border-r border-outline-variant card-glow">
+<div class="flex flex-col gap-4">
+<div>
+<h3 class="font-headline-md text-xl text-on-surface uppercase mb-1 leading-tight">Pilates Reformer</h3>
+<div class="flex items-center gap-2 text-secondary text-sm">
+<span class="material-symbols-outlined text-sm">person</span>
+<span>Prof. Lucas Torres</span>
+</div>
+<div class="flex items-center gap-2 text-secondary text-sm mt-1">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>Jueves, 09:30 - 10:30</span>
+</div>
+</div>
+<div class="mt-2">
+<div class="flex justify-between text-xs font-label-bold mb-2">
+<span class="text-tertiary uppercase">Ocupación</span>
+<span class="text-on-surface">6/12 (50%)</span>
+</div>
+<div class="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-tertiary-container transition-all duration-500" style="width: 50%"></div>
+</div>
+</div>
+<div class="flex justify-end pt-2">
+<span class="bg-tertiary-container/20 text-tertiary-container px-3 py-1 rounded-sm text-[10px] font-bold uppercase border border-tertiary-container/30">
+                            Disponible
+                        </span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Nav Bar (Mobile Mandatory Anchor) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 pb-safe px-4 bg-surface lg:hidden border-t border-outline-variant shadow-lg">
+<a class="flex flex-col items-center justify-center text-secondary active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-bold text-label-bold-mobile mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary-container active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">fitness_center</span>
+<span class="font-label-bold text-label-bold-mobile mt-1">Classes</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">book_online</span>
+<span class="font-label-bold text-label-bold-mobile mt-1">Booking</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-bold text-label-bold-mobile mt-1">Profile</span>
+</a>
+</nav>
+<script>
+        // Simple Interaction logic
+        document.querySelectorAll('.card-glow').forEach(card => {
+            card.addEventListener('click', () => {
+                card.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    card.style.transform = 'scale(1)';
+                }, 150);
+            });
+        });
+
+        // Toggle buttons logic
+        const pillButtons = document.querySelectorAll('.rounded-full.border');
+        pillButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                pillButtons.forEach(b => {
+                    b.classList.remove('bg-primary-container', 'text-on-primary-container', 'border-primary-container');
+                    b.classList.add('text-secondary', 'border-outline-variant');
+                });
+                btn.classList.add('bg-primary-container', 'text-on-primary-container', 'border-primary-container');
+                btn.classList.remove('text-secondary', 'border-outline-variant');
+            });
+        });
+    </script>
+</body></html>
