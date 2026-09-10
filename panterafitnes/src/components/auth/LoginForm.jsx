@@ -7,19 +7,25 @@ import { useAuth } from "@/context/AuthContext";
 import { roleHomePaths } from "@/components/layout/navigation";
 
 const testUsers = [
-  { email: "cliente@pantera.com", icon: "bolt" },
-  { email: "vencido@pantera.com", icon: "bolt" },
-  { email: "profesor@pantera.com", icon: "sports" },
-  { email: "admin@pantera.com", icon: "shield" }
+  { email: "cliente@panterfitness.com", icon: "bolt" },
+  { email: "vencido@panterfitness.com", icon: "bolt" },
+  { email: "profesor@panterfitness.com", icon: "sports" },
+  { email: "admin@panterfitness.com", icon: "shield" }
 ];
 
 export default function LoginForm() {
   const router = useRouter();
-  const { user, loading, login } = useAuth();
-  const [email, setEmail] = useState("cliente@pantera.com");
+  const { user, loading, login, sessionError } = useAuth();
+  const [email, setEmail] = useState("cliente@panterfitness.com");
   const [password, setPassword] = useState("123456");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("sesion") === "expirada") {
+      setError("Tu sesión venció. Volvé a iniciar sesión.");
+    }
+  }, []);
 
   useEffect(() => {
     if (!loading && user) {
@@ -27,20 +33,19 @@ export default function LoginForm() {
     }
   }, [loading, router, user]);
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
     setError("");
     setIsLoading(true);
 
-    window.setTimeout(() => {
-      try {
-        const authenticatedUser = login(email, password);
-        router.replace(roleHomePaths[authenticatedUser.rol] || "/cliente");
-      } catch (loginError) {
-        setError(loginError.message);
-        setIsLoading(false);
-      }
-    }, 300);
+    try {
+      const authenticatedUser = await login(email, password);
+      router.replace(roleHomePaths[authenticatedUser.rol] || "/cliente");
+    } catch (loginError) {
+      setError(loginError.message);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -119,7 +124,7 @@ export default function LoginForm() {
               />
             </div>
           </label>
-          {error ? <p className="form-error">{error}</p> : null}
+          {error || sessionError ? <p className="form-error" role="alert">{error || sessionError}</p> : null}
           <button className="primary-button" type="submit" disabled={isLoading}>
             {isLoading ? (
               <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>

@@ -1,38 +1,12 @@
-import { readStorage, writeStorage } from "@/services/storageService";
-
-const NOTIFICATIONS_KEY = "pantera_notifications";
+import { apiRequest } from "./apiClient";
+import { mapNotification } from "./mappers";
 
 export const notificationService = {
-  getAll() {
-    return readStorage(NOTIFICATIONS_KEY, []);
+  async getByUser() { return (await apiRequest("/api/notificaciones/mis-notificaciones")).map(mapNotification); },
+  async markAsRead(id) {
+    return mapNotification(await apiRequest(`/api/notificaciones/${id}/leer`, { method: "PATCH" }));
   },
-
-  getByUser(userId) {
-    return this.getAll().filter((notification) => notification.userId === userId);
-  },
-
-  createNotification({ userId, titulo, mensaje, tipo = "INFO" }) {
-    const notifications = this.getAll();
-    const newNotification = {
-      id: `notif-${Date.now()}-${Math.random().toString(16).slice(2)}`,
-      userId,
-      titulo,
-      mensaje,
-      tipo,
-      leida: false,
-      fecha: new Date().toISOString()
-    };
-
-    const nextNotifications = [newNotification, ...notifications];
-    writeStorage(NOTIFICATIONS_KEY, nextNotifications);
-    return nextNotifications;
-  },
-
-  markAllAsRead(userId) {
-    const nextNotifications = this.getAll().map((notification) =>
-      notification.userId === userId ? { ...notification, leida: true } : notification
-    );
-    writeStorage(NOTIFICATIONS_KEY, nextNotifications);
-    return nextNotifications;
+  async markAllAsRead(notifications) {
+    for (const item of notifications.filter((item) => !item.leida)) await this.markAsRead(item.id);
   }
 };

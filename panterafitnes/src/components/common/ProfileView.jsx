@@ -5,7 +5,7 @@ import StatusPill from "@/components/common/StatusPill";
 import NotificationsList from "@/components/notificaciones/NotificationsList";
 import QrSimulator from "@/components/qr/QrSimulator";
 import { getRoleLabel } from "@/components/layout/navigation";
-import { ROLES } from "@/data/mockUsers";
+import { ROLES } from "@/data/constants";
 import { useAppData } from "@/context/AppDataContext";
 import { useAuth } from "@/context/AuthContext";
 
@@ -23,14 +23,17 @@ export default function ProfileView() {
   const { notifications } = useAppData();
   const unreadCount = notifications.filter((notification) => !notification.leida).length;
   const isActiveMembership = user.membresia === "ACTIVA";
-  const membershipProgress = isActiveMembership ? 60 : 100;
+  const start = user.fechaInicioMembresia ? new Date(user.fechaInicioMembresia).getTime() : null;
+  const end = user.fechaVencimientoMembresia ? new Date(user.fechaVencimientoMembresia).getTime() : null;
+  const membershipProgress = start && end && end > start
+    ? Math.min(100, Math.max(0, ((Date.now() - start) / (end - start)) * 100)) : 0;
 
   return (
     <div className="stack">
       <PageHeader
         eyebrow="Perfil"
         title={user.nombre}
-        description="Datos de sesion mockeados y persistidos en localStorage."
+        description="Datos de tu cuenta y membresía registrados en el gimnasio."
       />
 
       <section className="panel card-glow" style={{ display: "flex", alignItems: "center", gap: 16 }}>
@@ -68,8 +71,8 @@ export default function ProfileView() {
           {user.rol === ROLES.CLIENTE ? (
             <div style={{ marginTop: 16 }}>
               <div className="card-title-row" style={{ marginBottom: 8 }}>
-                <span className="muted" style={{ fontSize: "0.78rem" }}>Inicio del ciclo</span>
-                <span className="muted" style={{ fontSize: "0.78rem" }}>Vencimiento</span>
+                <span className="muted" style={{ fontSize: "0.78rem" }}>Inicio: {user.fechaInicioMembresia || 'Sin fecha'}</span>
+                <span className="muted" style={{ fontSize: "0.78rem" }}>Vence: {user.fechaVencimientoMembresia || 'Sin fecha'}</span>
               </div>
               <div className="timeline-bar">
                 <span

@@ -15,11 +15,21 @@ Sistema de gestión para un gimnasio: reserva de clases, lista de espera, ocupac
 - `panterafitnes/` → Frontend (Next.js)
 - `panterafitnes-backend/` → Backend (API REST con Spring Boot)
 
-> **Importante:** hoy el frontend **no está conectado** al backend. El frontend funciona solo, con datos simulados guardados en `localStorage` del navegador (login, clases, reservas, ocupación, etc). El backend es una API funcional aparte, con su propia base de datos, pensada para conectarse más adelante.
+> El frontend consume la API real: **Next.js → Spring Boot → H2**. Login y registro usan JWT; clases, reservas, ocupación, notificaciones y QR se consultan o actualizan mediante HTTP. localStorage guarda únicamente el JWT y el perfil mínimo. Los antiguos archivos mock permanecen como referencia, sin usarse ni como fallback.
 
 ## Cómo ejecutar
 
 ### Frontend
+
+Requisitos: Node.js 20.9+ y npm (Node.js 24 para la prueba de integración).
+
+Copiar `panterafitnes/.env.example` a `panterafitnes/.env.local`:
+
+```dotenv
+NEXT_PUBLIC_API_URL=http://localhost:8080
+```
+
+La URL tiene ese valor por defecto. No agregar `/api`: los servicios incluyen ese prefijo. Reiniciar Next.js después de cambiar la variable; en producción se incorpora al ejecutar el build.
 
 ```
 cd panterafitnes
@@ -31,6 +41,8 @@ Abrir [http://localhost:3000](http://localhost:3000)
 
 ### Backend
 
+Requiere **JDK 21** y `JAVA_HOME` apuntando al JDK. En Windows usar `./gradlew.bat` en lugar de `./gradlew`.
+
 ```
 cd panterafitnes-backend
 ./gradlew bootRun
@@ -38,18 +50,9 @@ cd panterafitnes-backend
 
 API disponible en `http://localhost:8080`. Consola de la base de datos H2: `http://localhost:8080/h2-console` (JDBC URL: `jdbc:h2:mem:panterfitnessdb`, usuario `sa`, sin contraseña).
 
-## Usuarios hardcodeados
+## Usuarios de prueba
 
-### Frontend (mock, login en la app web)
-
-| Email | Contraseña | Rol | Membresía |
-|---|---|---|---|
-| cliente@pantera.com | 123456 | Cliente | Activa |
-| vencido@pantera.com | 123456 | Cliente | Vencida |
-| profesor@pantera.com | 123456 | Profesor | - |
-| admin@pantera.com | 123456 | Administrador | - |
-
-### Backend (se crean solos al arrancar la API)
+Estas cuentas se crean al arrancar el backend y funcionan en el login web:
 
 | Email | Contraseña | Rol | Membresía |
 |---|---|---|---|
@@ -126,3 +129,58 @@ El token se obtiene haciendo login.
 | Método | Ruta | Quién | Qué hace |
 |---|---|---|---|
 | POST | `/api/qr/simular-ingreso` | Cliente / Administrador | Simula el check-in con QR en una clase |
+
+## Demo de integración
+
+1. Levantar el backend y luego el frontend. Abrir [el login](http://localhost:3000/login). Todas las cuentas de la tabla usan `123456`.
+2. Entrar como cliente activo. En **Clases**, reservar un horario futuro con cupo. La API valida membresía, duplicados, superposición y anticipación de 30 minutos a una semana.
+3. En **Mis reservas**, comprobar la reserva. Usar **Cancelar → Sí, cancelar** en una clase que empiece dentro de más de 24 horas. El backend decide si permite la cancelación; un rechazo se muestra en pantalla.
+4. En la clase completa de Funcional del viernes, usar **Unirme a lista de espera**. La posición mostrada es la devuelta por el backend. Para probar promoción, cancelar una reserva de esa clase con un usuario `cupo01` a `cupo20` cuando falten más de 24 horas; el backend confirma al primero de la lista y genera su notificación.
+5. En **Ocupación**, comparar el total, sectores y cupos por clase. Se vuelven a consultar cada 10 segundos y después de las acciones. Reservar modifica los cupos de la clase; registrar una asistencia QR incrementa la ocupación del sector.
+6. En **Perfil**, seleccionar una reserva confirmada y usar **Simular ingreso** (hora de inicio) o **Simular 11 min tarde**. El resultado **ASISTIDA/AUSENTE** y el mensaje provienen de la API. Es una credencial visual y un ingreso simulado, sin lector físico.
+7. Abrir **Notificaciones**, comprobar los mensajes y **Marcar leídas**. Recargar para verificar persistencia en el backend.
+8. Cerrar sesión y entrar como cliente vencido. Intentar reservar: la API lo rechaza por membresía. Profesor ve sus horarios y alumnos; administrador ve reservas generales, ocupación y usuarios, y puede cambiar el estado de membresía en Inicio.
+9. Registrarse desde **Registrate como cliente**. La cuenta se crea en H2 y se inicia sesión con JWT. Recargar conserva la sesión; un JWT vencido/inválido la limpia y lleva a login.
+
+Los horarios demo se calculan al iniciar Spring Boot. La clase llena puede quedar fuera de la ventana de cancelación según el día/hora de la prueba. H2 está en memoria: reiniciar el backend borra registros, reservas y cambios de la demo.
+
+Si el backend no responde, la app muestra un error y permite reintentar. No inventa datos ni confirma acciones localmente. Si ya había datos cargados, se indica que pueden estar desactualizados.
+
+## Servicios y adaptación
+
+| Servicio | Endpoints |
+|---|---|
+| `authService` | POST login/registro; GET `/api/usuarios/me` |
+| `classService` | GET `/api/clases`, `/api/clases/semana`, `/api/horarios`, `/api/horarios/semana` |
+| `reservationService` | POST `/api/reservas`; GET mis-reservas/reservas según rol; DELETE cancelar |
+| `occupancyService` | GET general, sectores, clases y clases/{horarioId} bajo `/api/ocupacion` |
+| `notificationService` | GET mis-notificaciones; PATCH {id}/leer |
+| `qrService` | POST `/api/qr/simular-ingreso` |
+| `userService` | GET `/api/usuarios`; PATCH {id}/membresia |
+
+`apiClient.js` centraliza la URL, JWT, JSON, errores y cierre de sesión por 401. `mappers.js` adapta los DTOs: el `classId` de una reserva corresponde al **id del horario**, no al id del catálogo de clases. Las reglas de reserva permanecen en Spring Boot.
+
+## Verificación
+
+```sh
+cd panterafitnes-backend
+./gradlew build
+```
+
+```sh
+cd panterafitnes
+npm run build
+```
+
+Con el backend demo encendido, Node.js 24 y una clase llena a más de 24 horas:
+
+```sh
+cd panterafitnes
+npm run test:integration
+```
+
+La prueba usa los servicios reales del frontend, crea una cuenta `integracion-…@example.test` y registra acciones de demo en H2 (incluidas asistencias). No usa mocks de HTTP. Ejecutarla sobre la instancia local de prueba. Las pruebas del backend también comprueban JWT ausente, inválido y vencido, permisos por rol y CORS.
+
+## Punto 2 pendiente
+
+H2 y su configuración permanecen sin cambios. La migración futura a Supabase/PostgreSQL requiere configurar la conexión desde Spring Boot, preparar migraciones y persistencia de datos y revisar compatibilidad. No se implementó Supabase ni acceso directo desde el frontend a la base.

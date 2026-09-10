@@ -21,7 +21,7 @@ export default function HomeRedirect() {
     <main className="auth-screen">
       <section className="auth-card">
         <p className="eyebrow">Pantera Fitness</p>
-        <h1>Cargando MVP frontend...</h1>
+        <h1>Cargando Pantera Fitness...</h1>
       </section>
     </main>
   );

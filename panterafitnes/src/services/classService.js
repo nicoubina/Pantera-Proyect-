@@ -1,7 +1,5 @@
-import { buildMockClasses, getRollingWeekKey } from "@/data/mockClasses";
-import { readStorage, writeStorage } from "@/services/storageService";
-
-const CLASSES_KEY = "pantera_weekly_classes";
+import { apiRequest } from "./apiClient";
+import { mapSchedule } from "./mappers";
 
 export function getClassDateTime(classItem) {
   return new Date(`${classItem.fecha}T${classItem.hora}:00`);
@@ -21,11 +19,11 @@ export function getOccupationPercent(current, total) {
 }
 
 export function getOccupationLevel(percent) {
-  if (percent >= 85) {
+  if (percent >= 80) {
     return "Alta ocupacion";
   }
 
-  if (percent >= 55) {
+  if (percent >= 50) {
     return "Media ocupacion";
   }
 
@@ -63,23 +61,15 @@ export function getClassAvailability(classItem) {
 }
 
 export const classService = {
-  getWeeklyClasses() {
-    const weekKey = getRollingWeekKey();
-    const stored = readStorage(CLASSES_KEY, null);
-
-    if (stored?.weekKey === weekKey && Array.isArray(stored.classes)) {
-      return stored.classes;
-    }
-
-    const classes = buildMockClasses();
-    writeStorage(CLASSES_KEY, { weekKey, classes });
-    return classes;
-  },
-
-  saveWeeklyClasses(classes) {
-    writeStorage(CLASSES_KEY, {
-      weekKey: getRollingWeekKey(),
-      classes
-    });
+  getClasses() { return apiRequest("/api/clases"); },
+  getSchedules() { return apiRequest("/api/horarios"); },
+  getWeeklySchedules() { return apiRequest("/api/horarios/semana"); },
+  async getWeeklyClasses(occupancies = []) {
+    const schedules = await apiRequest("/api/clases/semana");
+    return Promise.all(schedules.map(async (dto) => {
+      const occupancy = occupancies.find((item) => item.horarioId === dto.id)
+        || await apiRequest(`/api/ocupacion/clases/${dto.id}`);
+      return mapSchedule(dto, occupancy);
+    }));
   }
 };

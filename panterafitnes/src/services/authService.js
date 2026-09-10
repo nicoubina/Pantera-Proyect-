@@ -1,78 +1,35 @@
-import { MEMBRESIAS, mockUsers, ROLES } from "@/data/mockUsers";
-import { readStorage, removeStorage, writeStorage } from "@/services/storageService";
+import { apiRequest, clearSession, SESSION_KEY, TOKEN_KEY } from "./apiClient";
+import { readStorage, writeStorage } from "./storageService";
+import { mapUser } from "./mappers";
 
-const REGISTERED_USERS_KEY = "pantera_registered_users";
-const SESSION_KEY = "pantera_current_user";
-
-function publicUser(user) {
-  const { password, ...safeUser } = user;
-  return safeUser;
-}
-
-function getRegisteredUsers() {
-  return readStorage(REGISTERED_USERS_KEY, []);
-}
-
-function saveRegisteredUsers(users) {
-  writeStorage(REGISTERED_USERS_KEY, users);
+function saveAuth(response) {
+  const user = mapUser(response.usuario);
+  writeStorage(TOKEN_KEY, response.token);
+  writeStorage(SESSION_KEY, user);
+  return user;
 }
 
 export const authService = {
-  getAllUsers() {
-    return [...mockUsers, ...getRegisteredUsers()].map(publicUser);
-  },
-
   getCurrentUser() {
-    return readStorage(SESSION_KEY, null);
+    return readStorage(TOKEN_KEY, null) ? readStorage(SESSION_KEY, null) : null;
   },
-
-  login(email, password) {
-    const normalizedEmail = email.trim().toLowerCase();
-    const users = [...mockUsers, ...getRegisteredUsers()];
-    const user = users.find(
-      (candidate) =>
-        candidate.email.toLowerCase() === normalizedEmail &&
-        candidate.password === password
-    );
-
-    if (!user) {
-      throw new Error("Email o password incorrectos.");
-    }
-
-    const safeUser = publicUser(user);
-    writeStorage(SESSION_KEY, safeUser);
-    return safeUser;
+  hasSession() { return Boolean(readStorage(TOKEN_KEY, null)); },
+  async getProfile() {
+    const token = readStorage(TOKEN_KEY, null);
+    const user = mapUser(await apiRequest("/api/usuarios/me"));
+    if (token === readStorage(TOKEN_KEY, null)) writeStorage(SESSION_KEY, user);
+    return user;
   },
-
-  register({ nombre, email, password }) {
-    const normalizedEmail = email.trim().toLowerCase();
-    const users = [...mockUsers, ...getRegisteredUsers()];
-    const exists = users.some((user) => user.email.toLowerCase() === normalizedEmail);
-
-    if (exists) {
-      throw new Error("Ya existe un usuario registrado con ese email.");
-    }
-
-    if (password.length < 6) {
-      throw new Error("El password debe tener al menos 6 caracteres.");
-    }
-
-    const newUser = {
-      id: `cliente-${Date.now()}`,
-      nombre: nombre.trim(),
-      email: normalizedEmail,
-      password,
-      rol: ROLES.CLIENTE,
-      membresia: MEMBRESIAS.ACTIVA
-    };
-
-    saveRegisteredUsers([...getRegisteredUsers(), newUser]);
-    const safeUser = publicUser(newUser);
-    writeStorage(SESSION_KEY, safeUser);
-    return safeUser;
+  async login(email, password) {
+    return saveAuth(await apiRequest("/api/auth/login", {
+      method: "POST", auth: false, body: { email: email.trim().toLowerCase(), password }
+    }));
   },
-
-  logout() {
-    removeStorage(SESSION_KEY);
-  }
+  async register({ nombre, apellido, email, password }) {
+    return saveAuth(await apiRequest("/api/auth/registro", {
+      method: "POST", auth: false,
+      body: { nombre: nombre.trim(), apellido: apellido?.trim(), email: email.trim().toLowerCase(), password }
+    }));
+  },
+  logout: clearSession
 };

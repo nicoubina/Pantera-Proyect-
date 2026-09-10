@@ -59,7 +59,7 @@ function matchesTab(tab, estado) {
 
 export default function MyReservations() {
   const { user } = useAuth();
-  const { classes, reservations, cancelReservation } = useAppData();
+  const { classes, reservations, cancelReservation, pending } = useAppData();
   const myReservations = reservations.filter((reservation) => reservation.userId === user.id);
   const [activeTab, setActiveTab] = useState("TODAS");
   const [isConfirming, setIsConfirming] = useState({});
@@ -69,13 +69,7 @@ export default function MyReservations() {
   );
 
   function getWaitlistPosition(reservation) {
-    const sameClassWaitlist = reservations
-      .filter(
-        (item) => item.classId === reservation.classId && item.estado === RESERVA_ESTADOS.EN_ESPERA
-      )
-      .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-
-    return sameClassWaitlist.findIndex((item) => item.id === reservation.id) + 1;
+    return reservation.posicionListaEspera ?? "—";
   }
 
   return (
@@ -83,7 +77,7 @@ export default function MyReservations() {
       <PageHeader
         eyebrow="Mis reservas"
         title="Reservas y lista de espera"
-        description="Aca podes cancelar reservas habilitadas y ver estados simulados."
+        description="Consultá tus reservas y solicitá cancelaciones. El gimnasio valida los plazos."
       />
 
       <div className="no-scrollbar" style={{ display: "flex", gap: 8, overflowX: "auto" }}>
@@ -102,7 +96,7 @@ export default function MyReservations() {
       {filteredReservations.length ? (
         <section className="reservation-list">
           {filteredReservations.map((reservation) => {
-            const classItem = classes.find((item) => item.id === reservation.classId);
+            const classItem = classes.find((item) => item.id === reservation.classId) || reservation.classItem;
             const canCancel = isReservationCancelable(reservation, classItem);
             const isHistory = HISTORY_STATES.includes(reservation.estado);
 
@@ -135,11 +129,6 @@ export default function MyReservations() {
                       Posición en lista: #{getWaitlistPosition(reservation)}
                     </p>
                   ) : null}
-                  {!canCancel && reservation.estado === RESERVA_ESTADOS.CONFIRMADA ? (
-                    <p className="inline-warning">
-                      No se puede cancelar por estar dentro de las 24 horas previas.
-                    </p>
-                  ) : null}
                 </div>
 
                 {canCancel ? (
@@ -148,6 +137,7 @@ export default function MyReservations() {
                       <button
                         className="ghost-button small"
                         type="button"
+                        disabled={pending}
                         style={{ borderColor: "var(--color-red)", color: "var(--color-red)" }}
                         onClick={() => cancelReservation(reservation.id)}
                       >

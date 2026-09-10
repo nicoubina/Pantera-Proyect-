@@ -1,4 +1,4 @@
-import { ROLES } from "@/data/mockUsers";
+import { ROLES } from "@/data/constants";
 
 export const roleHomePaths = {
   [ROLES.CLIENTE]: "/cliente",

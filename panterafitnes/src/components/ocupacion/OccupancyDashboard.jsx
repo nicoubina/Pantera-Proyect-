@@ -54,7 +54,7 @@ export default function OccupancyDashboard() {
   if (!occupancy) {
     return (
       <section className="panel">
-        <p className="muted">Cargando ocupacion simulada...</p>
+        <p className="muted">Ocupación no disponible. Reintentá la carga.</p>
       </section>
     );
   }
@@ -65,7 +65,7 @@ export default function OccupancyDashboard() {
         <PageHeader
           eyebrow="Ocupacion"
           title="Mapa visual del gimnasio"
-          description="Los valores se actualizan automaticamente cada 10 segundos con datos simulados."
+          description="La ocupación se consulta al gimnasio cada 10 segundos."
         />
         <div style={{ display: "grid", gap: 4, justifyItems: "end" }}>
           <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: "0.72rem" }} className="muted">
@@ -114,7 +114,7 @@ export default function OccupancyDashboard() {
         <div className="section-title-row">
           <div>
             <h3>Ocupacion por clase</h3>
-            <p className="muted">Capacidad por clase: 20 personas.</p>
+            <p className="muted">Capacidad y reservas por horario.</p>
           </div>
           <button
             type="button"

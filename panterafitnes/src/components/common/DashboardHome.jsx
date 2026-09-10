@@ -4,8 +4,7 @@ import Link from "next/link";
 import MetricCard from "@/components/common/MetricCard";
 import PageHeader from "@/components/common/PageHeader";
 import StatusPill from "@/components/common/StatusPill";
-import { ROLES } from "@/data/mockUsers";
-import { authService } from "@/services/authService";
+import { ROLES } from "@/data/constants";
 import { getClassAvailability } from "@/services/classService";
 import { RESERVA_ESTADOS } from "@/services/reservationService";
 import { useAppData } from "@/context/AppDataContext";
@@ -17,7 +16,7 @@ function formatClass(classItem) {
 
 export default function DashboardHome({ role }) {
   const { user } = useAuth();
-  const { classes, reservations, occupancy, notifications } = useAppData();
+  const { classes, reservations, occupancy, notifications, users, updateMembership, pending } = useAppData();
   const unreadCount = notifications.filter((item) => !item.leida).length;
 
   if (role === ROLES.CLIENTE) {
@@ -26,7 +25,7 @@ export default function DashboardHome({ role }) {
       (reservation) => reservation.estado === RESERVA_ESTADOS.CONFIRMADA
     );
     const nextClass = nextReservation
-      ? classes.find((classItem) => classItem.id === nextReservation.classId)
+      ? (classes.find((classItem) => classItem.id === nextReservation.classId) || nextReservation.classItem)
       : null;
     const waitingCount = myReservations.filter(
       (reservation) => reservation.estado === RESERVA_ESTADOS.EN_ESPERA
@@ -94,7 +93,7 @@ export default function DashboardHome({ role }) {
               >
                 event_available
               </span>{" "}
-              Tenés <strong>{nextClass ? "1 reserva" : "0 reservas"}</strong> confirmadas esta semana
+              Tenés <strong>{`${myReservations.filter((item) => item.estado === RESERVA_ESTADOS.CONFIRMADA).length} reservas`}</strong> confirmadas esta semana
             </p>
           </div>
           <div
@@ -147,7 +146,7 @@ export default function DashboardHome({ role }) {
             icon="notifications"
             label="Notificaciones"
             value={unreadCount}
-            detail="Internas y simuladas"
+            detail="Mensajes del gimnasio"
           />
         </section>
 
@@ -202,7 +201,7 @@ export default function DashboardHome({ role }) {
       <div className="stack">
         <PageHeader
           eyebrow="Inicio profesor"
-          title="Clases asignadas y asistencia simulada"
+          title="Clases asignadas y asistencia"
           description="Vista preparada para seguimiento de cupos, alumnos y check-in."
         />
         <section className="metric-grid">
@@ -232,7 +231,6 @@ export default function DashboardHome({ role }) {
     );
   }
 
-  const users = authService.getAllUsers();
   const activeUsers = users.filter((item) => item.membresia === "ACTIVA").length;
   const expiredUsers = users.filter((item) => item.membresia === "VENCIDA").length;
   const confirmedToday = reservations.filter(
@@ -260,12 +258,12 @@ export default function DashboardHome({ role }) {
     <div className="stack">
       <p className="eyebrow">{today}</p>
       <PageHeader
-        title="Resumen operativo simulado"
-        description="Metricas basicas del MVP con datos mockeados en frontend."
+        title="Resumen operativo"
+        description="Reservas, ocupación y membresías registradas en el gimnasio."
       />
       <section className="metric-grid">
-        <MetricCard icon="calendar_month" label="Reservas del dia" value={confirmedToday} detail="Confirmadas simuladas" />
-        <MetricCard icon="monitoring" label="Ocupacion promedio" value={occupancy ? `${occupancy.total.porcentaje}%` : "..."} detail={occupancy?.total.estado} />
+        <MetricCard icon="calendar_month" label="Reservas confirmadas" value={confirmedToday} detail="Reservas confirmadas" />
+        <MetricCard icon="monitoring" label="Ocupacion actual" value={occupancy ? `${occupancy.total.porcentaje}%` : "..."} detail={occupancy?.total.estado} />
         <MetricCard icon="groups" label="Usuarios activos" value={activeUsers} detail={`${expiredUsers} membresias vencidas`} />
         <MetricCard icon="star" label="Clase mas ocupada" value={topClass?.nombre || "-"} detail={topClass ? `${topClass.cuposOcupados}/${topClass.cupoTotal} cupos` : ""} />
       </section>
@@ -309,6 +307,30 @@ export default function DashboardHome({ role }) {
             </p>
             <strong style={{ fontSize: "2.2rem", color: "var(--color-red)" }}>{expiredUsers}</strong>
           </div>
+        </div>
+      </section>
+      <section className="panel">
+        <h3>Usuarios y membresías</h3>
+        <div className="reservation-list">
+          {users.filter((item) => item.rol === ROLES.CLIENTE).map((item) => (
+            <article className="reservation-card" key={item.id}>
+              <div><strong>{item.nombre}</strong><p className="muted">{item.email}</p></div>
+              <label>
+                Membresía
+                <select aria-label={`Membresía de ${item.email}`} value={item.membresia} disabled={pending}
+                  onChange={(event) => updateMembership(item.id, {
+                    estadoMembresia: event.target.value,
+                    fechaInicioMembresia: item.fechaInicioMembresia,
+                    fechaVencimientoMembresia: item.fechaVencimientoMembresia
+                  })}>
+                  <option value="ACTIVA">Activa</option>
+                  <option value="VENCIDA">Vencida</option>
+                  <option value="PENDIENTE">Pendiente</option>
+                  <option value="SUSPENDIDA">Suspendida</option>
+                </select>
+              </label>
+            </article>
+          ))}
         </div>
       </section>
     </div>

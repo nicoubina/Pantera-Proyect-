@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.io.DecodingException;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -72,7 +73,7 @@ public class JwtService {
 		try {
 			byte[] keyBytes = Decoders.BASE64.decode(secret);
 			return Keys.hmacShaKeyFor(keyBytes);
-		} catch (IllegalArgumentException exception) {
+		} catch (DecodingException | IllegalArgumentException exception) {
 			return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
 		}
 	}

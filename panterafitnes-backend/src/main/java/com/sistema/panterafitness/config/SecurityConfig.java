@@ -41,6 +41,11 @@ public class SecurityConfig {
 				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.exceptionHandling(errors -> errors.authenticationEntryPoint((request, response, exception) -> {
+					response.setStatus(401);
+					response.setContentType("application/json");
+					response.getWriter().write("{\"message\":\"Debes iniciar sesion.\"}");
+				}))
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/api/auth/**").permitAll()
 						.requestMatchers(PathRequest.toH2Console()).permitAll()

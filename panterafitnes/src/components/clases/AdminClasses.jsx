@@ -47,7 +47,7 @@ export default function AdminClasses() {
       <PageHeader
         eyebrow="Administrador"
         title="Ocupacion por clase"
-        description="Control basico de cupos completos y ocupacion simulada."
+        description="Cupos y ocupación registrados por clase."
       />
 
       <section className="metric-grid">

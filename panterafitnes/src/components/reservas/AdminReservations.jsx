@@ -17,19 +17,19 @@ export default function AdminReservations() {
       <PageHeader
         eyebrow="Administrador"
         title="Reservas realizadas"
-        description="Control basico de reservas, cancelaciones y lista de espera simulada."
+        description="Reservas, cancelaciones y lista de espera registradas en el gimnasio."
       />
 
       <section className="metric-grid">
         <MetricCard label="Confirmadas" value={confirmed.length} detail="Reservas activas" />
         <MetricCard label="Lista de espera" value={waitList.length} detail="Usuarios esperando cupo" tone="warning" />
-        <MetricCard label="Canceladas" value={reservations.filter((item) => item.estado === RESERVA_ESTADOS.CANCELADA).length} detail="Historial local" />
+        <MetricCard label="Canceladas" value={reservations.filter((item) => item.estado === RESERVA_ESTADOS.CANCELADA).length} detail="Historial de reservas" />
       </section>
 
       {reservations.length ? (
         <section className="reservation-list">
           {reservations.map((reservation) => {
-            const classItem = classes.find((item) => item.id === reservation.classId);
+            const classItem = classes.find((item) => item.id === reservation.classId) || reservation.classItem;
             return (
               <article className="reservation-card" key={reservation.id}>
                 <div>
@@ -46,7 +46,7 @@ export default function AdminReservations() {
           })}
         </section>
       ) : (
-        <EmptyState title="Sin reservas" description="No hay reservas registradas en localStorage." />
+        <EmptyState title="Sin reservas" description="No hay reservas registradas." />
       )}
     </div>
   );

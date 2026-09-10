@@ -13,7 +13,7 @@ export default function AppLayout({ children }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuth();
-  const { occupancy } = useAppData();
+  const { occupancy, loading, loadError, refresh } = useAppData();
   const navItems = getNavigationItems(user.rol);
   const [scrolled, setScrolled] = useState(false);
   const [occOpen, setOccOpen] = useState(false);
@@ -130,7 +130,16 @@ export default function AppLayout({ children }) {
           </div>
         </header>
 
-        <main className="page-content">{children}</main>
+        <main className="page-content">
+          {loadError ? (
+            <section className="warning-panel" role="alert">
+              <p>{loadError}</p>
+              <p>Los datos pueden estar desactualizados.</p>
+              <button className="secondary-button" type="button" onClick={refresh}>Reintentar</button>
+            </section>
+          ) : null}
+          {loading ? <section className="panel" role="status">Cargando datos...</section> : children}
+        </main>
       </div>
 
       <nav className="bottom-nav" aria-label="Navegacion movil">

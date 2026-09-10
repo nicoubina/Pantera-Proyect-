@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import StatusPill from "@/components/common/StatusPill";
-import { ROLES } from "@/data/mockUsers";
+import { ROLES } from "@/data/constants";
 import { RESERVA_ESTADOS } from "@/services/reservationService";
 import { useAppData } from "@/context/AppDataContext";
 import { useAuth } from "@/context/AuthContext";
@@ -20,7 +20,7 @@ const qrCells = [
 
 export default function QrSimulator() {
   const { user } = useAuth();
-  const { classes, reservations, simulateQr } = useAppData();
+  const { classes, reservations, simulateQr, pending } = useAppData();
   const confirmedReservations = useMemo(
     () =>
       reservations.filter(
@@ -33,8 +33,8 @@ export default function QrSimulator() {
   const [qrResult, setQrResult] = useState(null);
 
   useEffect(() => {
-    if (!reservationId && confirmedReservations.length) {
-      setReservationId(confirmedReservations[0].id);
+    if (!confirmedReservations.some((item) => item.id === reservationId)) {
+      setReservationId(confirmedReservations[0]?.id ?? "");
     }
   }, [confirmedReservations, reservationId]);
 
@@ -47,13 +47,14 @@ export default function QrSimulator() {
     return () => clearTimeout(timer);
   }, [qrResult]);
 
-  function handleSimulate(mode) {
-    simulateQr(reservationId, mode);
-    setQrResult(
-      mode === "AUSENTE"
-        ? { tone: "error", icon: "schedule", message: "Ingreso registrado con +10 min de tardanza." }
-        : { tone: "success", icon: "check_circle", message: "Ingreso simulado correctamente." }
-    );
+  async function handleSimulate(mode) {
+    setQrResult(null);
+    const result = await simulateQr(reservationId, mode);
+    if (result) setQrResult({
+      tone: result.estadoAsistencia === "ASISTIDA" ? "success" : "error",
+      icon: result.estadoAsistencia === "ASISTIDA" ? "check_circle" : "schedule",
+      message: result.mensaje
+    });
   }
 
   if (user.rol !== ROLES.CLIENTE) {
@@ -85,13 +86,13 @@ export default function QrSimulator() {
       <div className="qr-content">
         <div className="access-card">
           <p className="eyebrow">QR Simulado</p>
-          <h3 className="font-display">QR-PANTERA-{user.id.toUpperCase()}</h3>
+          <h3 className="font-display">{user.qrSimulado}</h3>
           <p>{user.nombre}</p>
           <StatusPill tone={user.membresia === "ACTIVA" ? "success" : "danger"}>
             Membresia {user.membresia}
           </StatusPill>
         </div>
-        <p className="muted">Este QR es simulado para el MVP.</p>
+        <p className="muted">Credencial visual simulada. El ingreso se registra al inicio de la clase o 11 minutos después, según la opción elegida.</p>
 
         {confirmedReservations.length ? (
           <div>
@@ -100,7 +101,7 @@ export default function QrSimulator() {
             </p>
             <div className="stack" style={{ gap: 8 }}>
               {confirmedReservations.map((reservation) => {
-                const classItem = classes.find((item) => item.id === reservation.classId);
+                const classItem = classes.find((item) => item.id === reservation.classId) || reservation.classItem;
                 const isSelected = reservation.id === reservationId;
 
                 return (
@@ -145,7 +146,7 @@ export default function QrSimulator() {
           <button
             className="primary-button"
             type="button"
-            disabled={!reservationId}
+            disabled={!reservationId || pending}
             onClick={() => handleSimulate("ASISTIDA")}
           >
             <span className="material-symbols-outlined" style={{ verticalAlign: "middle", marginRight: 6 }}>
@@ -156,13 +157,13 @@ export default function QrSimulator() {
           <button
             className="secondary-button"
             type="button"
-            disabled={!reservationId}
+            disabled={!reservationId || pending}
             onClick={() => handleSimulate("AUSENTE")}
           >
             <span className="material-symbols-outlined" style={{ verticalAlign: "middle", marginRight: 6 }}>
               schedule
             </span>
-            Simular +10 min tarde
+            Simular 11 min tarde
           </button>
         </div>
       </div>

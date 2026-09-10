@@ -24,13 +24,13 @@ export default function ProfessorReservations() {
       <PageHeader
         eyebrow="Reservas"
         title="Alumnos por clase"
-        description="Listado simulado de reservas, espera y asistencia."
+        description="Reservas, lista de espera y asistencias de tus clases."
       />
 
       {visibleReservations.length ? (
         <section className="reservation-list">
           {visibleReservations.map((reservation) => {
-            const classItem = classes.find((item) => item.id === reservation.classId);
+            const classItem = classes.find((item) => item.id === reservation.classId) || reservation.classItem;
             return (
               <article className="reservation-card" key={reservation.id}>
                 <div>

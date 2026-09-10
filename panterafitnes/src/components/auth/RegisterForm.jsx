@@ -52,22 +52,19 @@ export default function RegisterForm() {
     setStrength(getStrengthLevel(value));
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
     setError("");
     setIsLoading(true);
 
-    const fullName = apellido.trim() ? `${nombre} ${apellido}`.trim() : nombre;
-
-    window.setTimeout(() => {
-      try {
-        const registeredUser = register({ nombre: fullName, email, password });
-        router.replace(roleHomePaths[registeredUser.rol] || "/cliente");
-      } catch (registerError) {
-        setError(registerError.message);
-        setIsLoading(false);
-      }
-    }, 300);
+    try {
+      const registeredUser = await register({ nombre, apellido, email, password });
+      router.replace(roleHomePaths[registeredUser.rol] || "/cliente");
+    } catch (registerError) {
+      setError(registerError.message);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   const activeBars = password.length === 0 ? 0 : strength === "weak" ? 1 : strength === "medium" ? 2 : 3;

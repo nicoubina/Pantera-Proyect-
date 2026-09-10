@@ -4,7 +4,7 @@ import { useState } from "react";
 import EmptyState from "@/components/common/EmptyState";
 import PageHeader from "@/components/common/PageHeader";
 import StatusPill from "@/components/common/StatusPill";
-import { MEMBRESIAS } from "@/data/mockUsers";
+import { MEMBRESIAS } from "@/data/constants";
 import { getClassAvailability } from "@/services/classService";
 import { RESERVA_ESTADOS } from "@/services/reservationService";
 import { useAppData } from "@/context/AppDataContext";
@@ -50,7 +50,7 @@ function getTodayKey() {
 
 export default function WeeklyClasses() {
   const { user } = useAuth();
-  const { classes, reservations, reserveClass, joinWaitList } = useAppData();
+  const { classes, reservations, reserveClass, joinWaitList, pending } = useAppData();
   const groupedClasses = groupByDate(classes);
   const userReservations = reservations.filter(
     (reservation) =>
@@ -68,12 +68,13 @@ export default function WeeklyClasses() {
     return <EmptyState title="Sin clases" description="No hay clases cargadas para esta semana." />;
   }
 
-  function handleAction(classId, action) {
+  async function handleAction(classId, action) {
     setLoadingId(classId);
-    window.setTimeout(() => {
-      action(classId);
+    try {
+      await action(classId);
+    } finally {
       setLoadingId(null);
-    }, 500);
+    }
   }
 
   return (
@@ -81,7 +82,7 @@ export default function WeeklyClasses() {
       <PageHeader
         eyebrow="Clases"
         title="Reserva semanal"
-        description="Vista semanal con Funcional y Musculacion. Las validaciones son frontend y mockeadas."
+        description="Clases disponibles, cupos y lista de espera actualizados desde el gimnasio."
       />
 
       {user.membresia === MEMBRESIAS.VENCIDA ? (
@@ -177,7 +178,7 @@ export default function WeeklyClasses() {
                         <button
                           className="secondary-button"
                           type="button"
-                          disabled={isLoading}
+                          disabled={pending || isLoading}
                           onClick={() => handleAction(classItem.id, joinWaitList)}
                         >
                           {isLoading ? "Reservando..." : "Unirme a lista de espera"}
@@ -186,7 +187,7 @@ export default function WeeklyClasses() {
                         <button
                           className="primary-button"
                           type="button"
-                          disabled={isLoading}
+                          disabled={pending || isLoading}
                           onClick={() => handleAction(classItem.id, reserveClass)}
                         >
                           {isLoading ? "Reservando..." : "Reservar"}
