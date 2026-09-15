@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface HorarioClaseRepository extends JpaRepository<HorarioClase, Long> {
+	java.util.Optional<HorarioClase> findFirstByClaseGimnasioIdAndDiaSemanaAndHoraInicioOrderByIdAsc(
+			Long claseId, com.sistema.panterafitness.enums.DiaSemana dia, java.time.LocalTime inicio);
 
 	List<HorarioClase> findByActivaTrueOrderByFechaAscHoraInicioAsc();
 

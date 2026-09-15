@@ -1,186 +1,307 @@
 # Pantera Fitness
 
-Sistema de gestión para un gimnasio: reserva de clases, lista de espera, ocupación en vivo, notificaciones y un QR simulado de ingreso. Tiene 3 tipos de usuario: **Cliente**, **Profesor** y **Administrador**.
+Aplicación para gestionar un gimnasio: usuarios, clases, reservas, lista de espera, ocupación, notificaciones y un ingreso con QR simulado.
 
-## Tecnología usada
+## Antes de empezar
 
-| Parte | Tecnología |
+El programa tiene dos partes y **las dos deben estar encendidas**:
+
+- **Backend:** procesa el login y las reservas. Se ejecuta en el puerto **8080**.
+- **Frontend:** es la página que abrís en el navegador. Se ejecuta en el puerto **3000**.
+
+Necesitás **dos terminales PowerShell**: una para cada parte. Podés abrirlas desde Visual Studio Code.
+
+### Requisitos — instalar una sola vez
+
+- **Java JDK 21**, con `JAVA_HOME` configurado.
+- **Node.js 24**, con npm.
+- El proyecto descargado en tu computadora.
+
+No necesitás instalar Gradle ni PostgreSQL en tu computadora.
+
+Comprobá las instalaciones en PowerShell:
+
+```powershell
+java -version
+javac -version
+node -v
+npm -v
+```
+
+Java y javac deben mostrar la versión **21**. Si un comando no se reconoce, resolvé ese problema antes de seguir. Después de instalar, cerrá y volvé a abrir las terminales.
+
+### ¿Qué opción elegir?
+
+| Opción | Para qué sirve | ¿Conserva los datos al apagar el backend? |
+|---|---|---|
+| **A. H2** | Probar el programa sin configurar Supabase | No |
+| **B. Supabase** | Trabajar con la base de datos real | Sí |
+
+**Elegí una opción para el backend. Después iniciá el frontend con el paso 2.**
+
+Los comandos que siguen parten de la **carpeta principal del proyecto**, donde están estas dos carpetas:
+
+```text
+Pantera-Proyect-/
+├── panterafitnes-backend/
+└── panterafitnes/
+```
+
+Se conservan esos nombres de carpeta para que los comandos coincidan con el repositorio.
+
+## Paso 1 — Encender el backend
+
+### Opción A: probar rápido con H2
+
+En la **terminal 1**, desde la carpeta principal:
+
+```powershell
+cd panterafitnes-backend
+.\gradlew.bat bootRun --args="--spring.profiles.active=h2"
+```
+
+La primera vez puede tardar porque descarga las dependencias. Necesitás conexión a Internet para esa descarga.
+
+Esperá a ver un mensaje parecido a **Started PanterfitnessApplication** y el puerto **8080**. Dejá esta terminal abierta y pasá al **paso 2**.
+
+**Con H2, los usuarios nuevos, las reservas y los cambios se pierden cuando apagás el backend.** Los datos demo se crean de nuevo en el siguiente inicio.
+
+### Opción B: usar Supabase y conservar los datos
+
+#### 1. Comprobar que las tablas están creadas
+
+**En el proyecto Supabase confirmado para Pantera Fitness, la migración ya se ejecutó el 14/09/2026. No la ejecutes otra vez.**
+
+Solo si vas a usar **otro proyecto vacío** de Supabase:
+
+1. Abrí ese proyecto en Supabase.
+2. Entrá a **SQL Editor**.
+3. Copiá el contenido completo de [001_create_panterfitness_schema.sql](supabase/migrations/001_create_panterfitness_schema.sql).
+4. Ejecutalo una sola vez.
+
+Esto crea las tablas. Los usuarios demo se crearán cuando arranque el backend.
+
+#### 2. Crear el archivo de configuración
+
+En la **terminal 1**, desde la carpeta principal:
+
+```powershell
+cd panterafitnes-backend
+if (!(Test-Path .env)) { Copy-Item .env.example .env }
+notepad .env
+```
+
+Si ya existe `.env`, el comando lo conserva. Completá el archivo con tus datos:
+
+```dotenv
+SPRING_PROFILES_ACTIVE=supabase
+SUPABASE_DB_URL=jdbc:postgresql://HOST:5432/postgres?sslmode=require
+SUPABASE_DB_USERNAME=USUARIO_DE_BASE_DE_DATOS
+SUPABASE_DB_PASSWORD=CONTRASEÑA_DE_BASE_DE_DATOS
+JWT_SECRET=TU_SECRETO_GENERADO
+PANTERFITNESS_DEMO_ENABLED=true
+```
+
+**Reemplazá los textos de ejemplo. No los dejes tal como aparecen.**
+
+| Dato | Qué poner |
 |---|---|
-| Frontend | Next.js 15 + React 19, CSS plano (sin Tailwind) |
-| Backend | Spring Boot 3 + Java 21, Spring Security con JWT |
-| Base de datos | H2 en memoria (se reinicia cada vez que se levanta el backend) |
+| `HOST` | El host que aparece en **Connect** dentro de tu proyecto Supabase |
+| `SUPABASE_DB_USERNAME` | El usuario de esa misma conexión |
+| `SUPABASE_DB_PASSWORD` | La contraseña de la **base de datos**, no la de tu cuenta Supabase |
+| `JWT_SECRET` | El valor que generás con el comando de abajo |
 
-## Estructura del proyecto
+Para una conexión desde una red IPv4, elegí **Session pooler** en **Connect**: usa el puerto **5432** y un usuario como `postgres.REFERENCIA_DEL_PROYECTO`. Copiá el host y el usuario exactos que muestre Supabase.
 
-- `panterafitnes/` → Frontend (Next.js)
-- `panterafitnes-backend/` → Backend (API REST con Spring Boot)
+Si usás conexión directa, el usuario normalmente es `postgres`; esa conexión requiere IPv6 o el complemento IPv4. Más detalles en la [guía de conexión de Supabase](https://supabase.com/docs/guides/database/connecting-to-postgres).
 
-> El frontend consume la API real: **Next.js → Spring Boot → H2**. Login y registro usan JWT; clases, reservas, ocupación, notificaciones y QR se consultan o actualizan mediante HTTP. localStorage guarda únicamente el JWT y el perfil mínimo. Los antiguos archivos mock permanecen como referencia, sin usarse ni como fallback.
+La URL del archivo debe empezar con **`jdbc:postgresql://`**. No uses la URL web del proyecto ni incluyas la contraseña dentro de esa URL.
 
-## Cómo ejecutar
+Para generar `JWT_SECRET`, ejecutá en PowerShell:
 
-### Frontend
+```powershell
+$bytes = New-Object byte[] 32
+$rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+$rng.GetBytes($bytes)
+[Convert]::ToBase64String($bytes)
+$rng.Dispose()
+```
 
-Requisitos: Node.js 20.9+ y npm (Node.js 24 para la prueba de integración).
+Copiá el resultado después de `JWT_SECRET=`. Generalo **una sola vez** y conservá ese valor: cambiarlo invalida las sesiones anteriores.
 
-Copiar `panterafitnes/.env.example` a `panterafitnes/.env.local`:
+Guardá y cerrá el archivo. Escribí los valores **sin comillas**. El archivo se lee como propiedades de Java; si tu contraseña contiene una barra invertida, escribila como `\\`.
+
+**No subas `.env` a GitHub ni compartas su contenido.** Está excluido por `.gitignore`.
+
+#### 3. Arrancar el backend
+
+En esa misma terminal, dentro de `panterafitnes-backend`:
+
+```powershell
+.\gradlew.bat bootRun --args="--spring.profiles.active=supabase"
+```
+
+Esperá a ver **Started PanterfitnessApplication** y el puerto **8080**. Dejá la terminal abierta.
+
+El perfil Supabase lee el archivo `.env` al ejecutar desde esta carpeta. Si también configuraste variables de entorno en la terminal, esas variables tienen prioridad sobre el archivo.
+
+## Paso 2 — Encender el frontend
+
+Abrí la **terminal 2 en la carpeta principal del proyecto**. No cierres la terminal del backend.
+
+La primera vez:
+
+```powershell
+cd panterafitnes
+if (!(Test-Path .env.local)) { Copy-Item .env.example .env.local }
+npm ci
+npm run dev
+```
+
+El archivo `panterafitnes/.env.local` debe contener:
 
 ```dotenv
 NEXT_PUBLIC_API_URL=http://localhost:8080
 ```
 
-La URL tiene ese valor por defecto. No agregar `/api`: los servicios incluyen ese prefijo. Reiniciar Next.js después de cambiar la variable; en producción se incorpora al ejecutar el build.
+**Este valor es el mismo con H2 y con Supabase.** No agregues `/api`.
 
+Esperá a que la terminal muestre que la página está lista y abrí:
+
+### [Abrir Pantera Fitness: http://localhost:3000](http://localhost:3000)
+
+Para usar el programa entrá al puerto **3000**. El **8080** corresponde a la API del backend.
+
+## Paso 3 — Iniciar sesión
+
+Con los datos demo habilitados, podés usar estas cuentas:
+
+| Email | Contraseña | Tipo de usuario |
+|---|---|---|
+| cliente@panterfitness.com | 123456 | Cliente con membresía activa |
+| vencido@panterfitness.com | 123456 | Cliente con membresía vencida |
+| profesor@panterfitness.com | 123456 | Profesor |
+| admin@panterfitness.com | 123456 | Administrador |
+
+Para una primera prueba, entrá con **cliente@panterfitness.com / 123456**.
+
+1. Abrí **Clases** y reservá un horario con cupo que empiece entre 30 minutos y una semana después.
+2. Revisá la reserva en **Mis reservas**.
+3. Abrí **Notificaciones** para ver la confirmación.
+4. Para cancelar, elegí una clase a la que todavía le falten **más de 24 horas**.
+
+También se crean `cupo01@panterfitness.com` hasta `cupo20@panterfitness.com` y `espera@panterfitness.com`, con contraseña `123456`, para probar una clase llena y la lista de espera.
+
+En Supabase, las cuentas existentes conservan sus contraseñas y cambios. Reiniciar no las restablece. Los horarios demo tampoco se renuevan cada semana: si quedaron en el pasado, hay que crear horarios nuevos.
+
+## Cómo abrirlo las próximas veces
+
+Abrí **dos terminales nuevas**, ambas en la carpeta principal.
+
+**Terminal 1 — backend con Supabase** (con `.env` ya configurado):
+
+```powershell
+cd panterafitnes-backend
+.\gradlew.bat bootRun --args="--spring.profiles.active=supabase"
 ```
+
+Para usar H2, reemplazá `supabase` por `h2` en ese comando.
+
+**Terminal 2 — frontend:**
+
+```powershell
 cd panterafitnes
-npm install
 npm run dev
 ```
 
-Abrir [http://localhost:3000](http://localhost:3000)
+Abrí [http://localhost:3000](http://localhost:3000). No hace falta repetir la configuración ni `npm ci` cada vez; usalo si faltan las dependencias o cambia el archivo `package-lock.json`.
 
-### Backend
+### Cómo detenerlo
 
-Requiere **JDK 21** y `JAVA_HOME` apuntando al JDK. En Windows usar `./gradlew.bat` en lugar de `./gradlew`.
+Presioná **Ctrl+C en cada terminal**. Si Windows pregunta si querés terminar el proceso, confirmá.
 
-```
-cd panterafitnes-backend
-./gradlew bootRun
-```
+Con Supabase se guardan los datos. Con H2 se pierden.
 
-API disponible en `http://localhost:8080`. Consola de la base de datos H2: `http://localhost:8080/h2-console` (JDBC URL: `jdbc:h2:mem:panterfitnessdb`, usuario `sa`, sin contraseña).
+## Problemas frecuentes
 
-## Usuarios de prueba
-
-Estas cuentas se crean al arrancar el backend y funcionan en el login web:
-
-| Email | Contraseña | Rol | Membresía |
-|---|---|---|---|
-| cliente@panterfitness.com | 123456 | Cliente | Activa |
-| vencido@panterfitness.com | 123456 | Cliente | Vencida |
-| profesor@panterfitness.com | 123456 | Profesor | Activa |
-| admin@panterfitness.com | 123456 | Administrador | Activa |
-
-Además se crean usuarios `cupo01@panterfitness.com` ... `cupo20@panterfitness.com` y `espera@panterfitness.com` (todos con contraseña `123456`) para simular una clase de "Funcional" llena los viernes, con una persona en lista de espera.
-
-## Endpoints del backend
-
-Todos los endpoints, salvo `/api/auth/**`, requieren el header:
-```
-Authorization: Bearer <token>
-```
-El token se obtiene haciendo login.
-
-### Autenticación — `/api/auth`
-| Método | Ruta | Quién | Qué hace |
-|---|---|---|---|
-| POST | `/api/auth/registro` | Público | Crea una cuenta nueva (rol Cliente) |
-| POST | `/api/auth/login` | Público | Inicia sesión y devuelve el token JWT |
-
-### Usuarios — `/api/usuarios`
-| Método | Ruta | Quién | Qué hace |
-|---|---|---|---|
-| GET | `/api/usuarios/me` | Cualquier usuario logueado | Datos del usuario actual |
-| GET | `/api/usuarios` | Administrador | Lista todos los usuarios |
-| PATCH | `/api/usuarios/{id}/membresia` | Administrador | Cambia el estado de membresía de un usuario |
-
-### Clases — `/api/clases`
-| Método | Ruta | Quién | Qué hace |
-|---|---|---|---|
-| GET | `/api/clases` | Todos | Lista las clases |
-| GET | `/api/clases/semana` | Todos | Horarios de la semana |
-| GET | `/api/clases/{id}` | Todos | Detalle de una clase |
-| POST | `/api/clases` | Administrador | Crea una clase |
-| PUT | `/api/clases/{id}` | Administrador | Edita una clase |
-| DELETE | `/api/clases/{id}` | Administrador | Elimina una clase |
-
-### Horarios — `/api/horarios`
-| Método | Ruta | Quién | Qué hace |
-|---|---|---|---|
-| GET | `/api/horarios` | Todos | Lista los horarios |
-| GET | `/api/horarios/semana` | Todos | Horarios de la semana |
-| POST | `/api/horarios` | Administrador | Crea un horario |
-| PUT | `/api/horarios/{id}` | Administrador | Edita un horario |
-| DELETE | `/api/horarios/{id}` | Administrador | Elimina un horario |
-
-### Reservas — `/api/reservas`
-| Método | Ruta | Quién | Qué hace |
-|---|---|---|---|
-| POST | `/api/reservas` | Cliente | Reserva una clase (o entra a lista de espera si está completa) |
-| GET | `/api/reservas/mis-reservas` | Cliente | Ve sus propias reservas |
-| GET | `/api/reservas` | Profesor / Administrador | Lista todas las reservas |
-| DELETE | `/api/reservas/{id}/cancelar` | Cliente / Administrador | Cancela una reserva |
-
-### Ocupación — `/api/ocupacion`
-| Método | Ruta | Quién | Qué hace |
-|---|---|---|---|
-| GET | `/api/ocupacion/general` | Todos | Ocupación total del gimnasio |
-| GET | `/api/ocupacion/sectores` | Todos | Ocupación por sector (musculación, sala de clases) |
-| GET | `/api/ocupacion/clases` | Todos | Ocupación de todas las clases |
-| GET | `/api/ocupacion/clases/{horarioId}` | Todos | Ocupación de una clase puntual |
-
-### Notificaciones — `/api/notificaciones`
-| Método | Ruta | Quién | Qué hace |
-|---|---|---|---|
-| GET | `/api/notificaciones/mis-notificaciones` | Cualquier usuario logueado | Lista sus notificaciones |
-| PATCH | `/api/notificaciones/{id}/leer` | Cualquier usuario logueado | Marca una notificación como leída |
-
-### QR — `/api/qr`
-| Método | Ruta | Quién | Qué hace |
-|---|---|---|---|
-| POST | `/api/qr/simular-ingreso` | Cliente / Administrador | Simula el check-in con QR en una clase |
-
-## Demo de integración
-
-1. Levantar el backend y luego el frontend. Abrir [el login](http://localhost:3000/login). Todas las cuentas de la tabla usan `123456`.
-2. Entrar como cliente activo. En **Clases**, reservar un horario futuro con cupo. La API valida membresía, duplicados, superposición y anticipación de 30 minutos a una semana.
-3. En **Mis reservas**, comprobar la reserva. Usar **Cancelar → Sí, cancelar** en una clase que empiece dentro de más de 24 horas. El backend decide si permite la cancelación; un rechazo se muestra en pantalla.
-4. En la clase completa de Funcional del viernes, usar **Unirme a lista de espera**. La posición mostrada es la devuelta por el backend. Para probar promoción, cancelar una reserva de esa clase con un usuario `cupo01` a `cupo20` cuando falten más de 24 horas; el backend confirma al primero de la lista y genera su notificación.
-5. En **Ocupación**, comparar el total, sectores y cupos por clase. Se vuelven a consultar cada 10 segundos y después de las acciones. Reservar modifica los cupos de la clase; registrar una asistencia QR incrementa la ocupación del sector.
-6. En **Perfil**, seleccionar una reserva confirmada y usar **Simular ingreso** (hora de inicio) o **Simular 11 min tarde**. El resultado **ASISTIDA/AUSENTE** y el mensaje provienen de la API. Es una credencial visual y un ingreso simulado, sin lector físico.
-7. Abrir **Notificaciones**, comprobar los mensajes y **Marcar leídas**. Recargar para verificar persistencia en el backend.
-8. Cerrar sesión y entrar como cliente vencido. Intentar reservar: la API lo rechaza por membresía. Profesor ve sus horarios y alumnos; administrador ve reservas generales, ocupación y usuarios, y puede cambiar el estado de membresía en Inicio.
-9. Registrarse desde **Registrate como cliente**. La cuenta se crea en H2 y se inicia sesión con JWT. Recargar conserva la sesión; un JWT vencido/inválido la limpia y lleva a login.
-
-Los horarios demo se calculan al iniciar Spring Boot. La clase llena puede quedar fuera de la ventana de cancelación según el día/hora de la prueba. H2 está en memoria: reiniciar el backend borra registros, reservas y cambios de la demo.
-
-Si el backend no responde, la app muestra un error y permite reintentar. No inventa datos ni confirma acciones localmente. Si ya había datos cargados, se indica que pueden estar desactualizados.
-
-## Servicios y adaptación
-
-| Servicio | Endpoints |
+| Problema | Qué revisar |
 |---|---|
-| `authService` | POST login/registro; GET `/api/usuarios/me` |
-| `classService` | GET `/api/clases`, `/api/clases/semana`, `/api/horarios`, `/api/horarios/semana` |
-| `reservationService` | POST `/api/reservas`; GET mis-reservas/reservas según rol; DELETE cancelar |
-| `occupancyService` | GET general, sectores, clases y clases/{horarioId} bajo `/api/ocupacion` |
-| `notificationService` | GET mis-notificaciones; PATCH {id}/leer |
-| `qrService` | POST `/api/qr/simular-ingreso` |
-| `userService` | GET `/api/usuarios`; PATCH {id}/membresia |
+| `JAVA_HOME is not set` o Java no se reconoce | Instalá JDK 21. Configurá `JAVA_HOME` con la carpeta del JDK y agregá su carpeta `bin` al `Path`. Abrí una terminal nueva. |
+| `npm` no se reconoce | Instalá Node.js con npm y abrí una terminal nueva. |
+| PowerShell bloquea `npm.ps1` | Usá `npm.cmd ci` y `npm.cmd run dev` en lugar de `npm`. |
+| No se encuentra `gradlew.bat` | Entrá a `panterafitnes-backend` antes de ejecutar el comando. |
+| npm no encuentra `package.json` | Entrá a `panterafitnes` antes de ejecutar los comandos del frontend. |
+| Falta `SUPABASE_DB_URL` o `JWT_SECRET` | Completá `panterafitnes-backend/.env`, verificá que no se haya guardado como `.env.txt` y arrancá desde esa carpeta. |
+| Supabase rechaza la contraseña | Revisá la contraseña de la base y el usuario de **Connect**. No uses una API key. |
+| No se puede conectar al host de Supabase | Revisá host, puerto y conexión a Internet. Si tu red es IPv4, usá **Session pooler**. |
+| Hibernate indica que falta una tabla | Confirmá que estás conectando al proyecto donde se ejecutó la migración. |
+| La página abre, pero falla el login o no carga datos | Comprobá que el backend haya terminado de arrancar en 8080 y que `NEXT_PUBLIC_API_URL` sea correcto. |
+| El puerto 8080 o 3000 está ocupado | Detené la instancia anterior con Ctrl+C y volvé a iniciar. |
+| No aparecen clases de esta semana | Los horarios demo pueden ser antiguos. Reiniciar Supabase no crea una semana nueva. |
+| La reserva o cancelación es rechazada | Revisá membresía, cupos y los tiempos permitidos indicados en el paso 3. |
 
-`apiClient.js` centraliza la URL, JWT, JSON, errores y cierre de sesión por 401. `mappers.js` adapta los DTOs: el `classId` de una reserva corresponde al **id del horario**, no al id del catálogo de clases. Las reglas de reserva permanecen en Spring Boot.
+## Comprobar que Supabase guarda los datos
 
-## Verificación
+1. Ejecutá el programa con la opción **Supabase**.
+2. Registrá una cuenta nueva desde la página y creá una reserva.
+3. Detené el backend con Ctrl+C.
+4. Volvé a encenderlo con Supabase y el mismo archivo `.env`.
+5. Iniciá sesión con esa cuenta y comprobá que la reserva siga en **Mis reservas**.
 
-```sh
+Cambiar de H2 a Supabase **no copia los datos de H2**: son bases distintas.
+
+## Información para desarrollo
+
+La conexión siempre es:
+
+**Frontend Next.js → Backend Spring Boot → Base de datos**
+
+Spring Boot maneja login, JWT, roles y reglas de negocio. Supabase solo se usa como PostgreSQL: no se utiliza Supabase Auth, Storage, Realtime ni Edge Functions, y el frontend no necesita claves de Supabase.
+
+### Base de datos
+
+- Tablas: `usuarios`, `sectores_gimnasio`, `clases_gimnasio`, `horarios_clase`, `reservas`, `lista_espera`, `asistencias` y `notificaciones`.
+- [Migración SQL](supabase/migrations/001_create_panterfitness_schema.sql): crea tablas, relaciones, restricciones e índices.
+- [Consulta de verificación](supabase/verify_panterfitness.sql): revisa tablas, RLS y duplicados.
+- Supabase usa `ddl-auto=validate`: comprueba las tablas sin crearlas ni eliminarlas.
+- Todas las tablas tienen RLS habilitado, sin políticas públicas; `anon` y `authenticated` no tienen permisos sobre ellas. El backend usa una conexión JDBC privilegiada; la autorización de cada usuario queda en Spring.
+- La carga demo evita duplicados y no restablece datos existentes. Ejecutar el primer arranque con una sola instancia del backend.
+- `PANTERFITNESS_DEMO_ENABLED=false` desactiva la carga demo, pero no elimina las cuentas creadas anteriormente.
+- El perfil predeterminado es Supabase. Los comandos de esta guía eligen el perfil explícitamente.
+
+### Pruebas opcionales
+
+Estos comandos son para comprobar el código; **no son necesarios para abrir el programa**. Ejecutá cada bloque desde la carpeta principal.
+
+Backend:
+
+```powershell
 cd panterafitnes-backend
-./gradlew build
+.\gradlew.bat build
 ```
 
-```sh
+Frontend:
+
+```powershell
 cd panterafitnes
 npm run build
 ```
 
-Con el backend demo encendido, Node.js 24 y una clase llena a más de 24 horas:
+Con el backend demo encendido, para probar los servicios HTTP:
 
-```sh
+```powershell
 cd panterafitnes
 npm run test:integration
 ```
 
-La prueba usa los servicios reales del frontend, crea una cuenta `integracion-…@example.test` y registra acciones de demo en H2 (incluidas asistencias). No usa mocks de HTTP. Ejecutarla sobre la instancia local de prueba. Las pruebas del backend también comprueban JWT ausente, inválido y vencido, permisos por rol y CORS.
+La prueba de integración necesita dos horarios disponibles y una clase llena a más de 24 horas del inicio. Crea usuarios, reservas y asistencias en la base activa. Las pruebas Java usan H2.
 
-## Punto 2 pendiente
+### Estado de la migración
 
-H2 y su configuración permanecen sin cambios. La migración futura a Supabase/PostgreSQL requiere configurar la conexión desde Spring Boot, preparar migraciones y persistencia de datos y revisar compatibilidad. No se implementó Supabase ni acceso directo desde el frontend a la base.
+La migración se aplicó y se verificaron las ocho tablas, las restricciones, los índices y RLS. La versión registrada en Supabase es `20260914232352`.
+
+La validación de arranque JDBC, endpoints y persistencia entre reinicios quedó pendiente en la entrega de la migración. Las pruebas Java agregadas no se ejecutaron: se preparó Java 21 temporal, pero se rechazó la ejecución de Gradle. El build del frontend tampoco se inició por falta de npm. Esta guía no implica que esas pruebas hayan pasado.
+
+El asesor de Supabase señaló permisos de ejecución en la función preexistente `public.rls_auto_enable()`; queda por revisar [ese aviso](https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable).
+
+Para el detalle de la integración y sus endpoints, consultá [INTEGRACION.md](INTEGRACION.md), que documenta el trabajo previo con H2.

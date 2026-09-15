@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface ReservaRepository extends JpaRepository<Reserva, Long> {
+	boolean existsByHorarioClaseId(Long horarioId);
 
 	List<Reserva> findByUsuarioIdOrderByFechaCreacionDesc(Long usuarioId);
 

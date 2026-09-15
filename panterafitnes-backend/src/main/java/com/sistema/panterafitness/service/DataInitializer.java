@@ -34,6 +34,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
+        name = "panterfitness.demo.enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 
@@ -49,10 +51,6 @@ public class DataInitializer implements CommandLineRunner {
 	@Override
 	@Transactional
 	public void run(String... args) {
-		if (usuarioRepository.count() > 0) {
-			return;
-		}
-
 		LocalDate hoy = LocalDate.now();
 		Usuario clienteActivo = crearUsuario(
 				"Cliente",
@@ -95,20 +93,20 @@ public class DataInitializer implements CommandLineRunner {
 				"QR-ADMIN-DEMO"
 		);
 
-		sectorGimnasioRepository.save(SectorGimnasio.builder()
+		crearSectorSiFalta(SectorGimnasio.builder()
 				.nombre(Sector.MUSCULACION)
 				.capacidadMaxima(40)
 				.ocupacionActual(18)
 				.activo(true)
 				.build());
-		sectorGimnasioRepository.save(SectorGimnasio.builder()
+		crearSectorSiFalta(SectorGimnasio.builder()
 				.nombre(Sector.SALA_CLASES)
 				.capacidadMaxima(20)
 				.ocupacionActual(7)
 				.activo(true)
 				.build());
 
-		ClaseGimnasio funcional = claseGimnasioRepository.save(ClaseGimnasio.builder()
+		ClaseGimnasio funcional = crearClaseSiFalta(ClaseGimnasio.builder()
 				.nombre("Funcional")
 				.descripcion("Entrenamiento funcional grupal para fuerza y resistencia.")
 				.profesor(profesor)
@@ -116,7 +114,7 @@ public class DataInitializer implements CommandLineRunner {
 				.cupoMaximo(20)
 				.activa(true)
 				.build());
-		ClaseGimnasio musculacion = claseGimnasioRepository.save(ClaseGimnasio.builder()
+		ClaseGimnasio musculacion = crearClaseSiFalta(ClaseGimnasio.builder()
 				.nombre("Musculacion")
 				.descripcion("Clase guiada de tecnica y rutina basica de musculacion.")
 				.profesor(profesor)
@@ -125,7 +123,7 @@ public class DataInitializer implements CommandLineRunner {
 				.activa(true)
 				.build());
 
-		HorarioClase funcionalLunes = crearHorario(funcional, DayOfWeek.MONDAY, LocalTime.of(18, 0), LocalTime.of(19, 0));
+		crearHorario(funcional, DayOfWeek.MONDAY, LocalTime.of(18, 0), LocalTime.of(19, 0));
 		crearHorario(funcional, DayOfWeek.WEDNESDAY, LocalTime.of(18, 0), LocalTime.of(19, 0));
 		HorarioClase funcionalViernes = crearHorario(funcional, DayOfWeek.FRIDAY, LocalTime.of(18, 0), LocalTime.of(19, 0));
 		crearHorario(musculacion, DayOfWeek.TUESDAY, LocalTime.of(19, 0), LocalTime.of(20, 0));
@@ -146,6 +144,10 @@ public class DataInitializer implements CommandLineRunner {
 			LocalDate vencimiento,
 			String qr
 	) {
+		var existente = usuarioRepository.findByEmail(email);
+		if (existente.isPresent()) {
+			return existente.get();
+		}
 		return usuarioRepository.save(Usuario.builder()
 				.nombre(nombre)
 				.apellido(apellido)
@@ -161,6 +163,13 @@ public class DataInitializer implements CommandLineRunner {
 	}
 
 	private HorarioClase crearHorario(ClaseGimnasio clase, DayOfWeek dayOfWeek, LocalTime inicio, LocalTime fin) {
+		// Reutilizar incluso horarios pasados/inactivos: reiniciar no genera otra semana.
+		var existente = horarioClaseRepository
+				.findFirstByClaseGimnasioIdAndDiaSemanaAndHoraInicioOrderByIdAsc(
+						clase.getId(), DiaSemana.from(dayOfWeek), inicio);
+		if (existente.isPresent()) {
+			return existente.get();
+		}
 		LocalDate fecha = proximaFecha(dayOfWeek, inicio);
 		return horarioClaseRepository.save(HorarioClase.builder()
 				.claseGimnasio(clase)
@@ -184,6 +193,10 @@ public class DataInitializer implements CommandLineRunner {
 	}
 
 	private void sembrarHorarioLleno(HorarioClase horario) {
+		// No volver a llenar una clase cuyas reservas ya fueron canceladas o atendidas.
+		if (reservaRepository.existsByHorarioClaseId(horario.getId())) {
+			return;
+		}
 		List<Usuario> clientes = new ArrayList<>();
 		for (int i = 1; i <= horario.getCupoMaximo(); i++) {
 			String numero = String.format("%02d", i);
@@ -236,6 +249,9 @@ public class DataInitializer implements CommandLineRunner {
 	}
 
 	private void crearNotificacionSistema(Usuario usuario, String mensaje) {
+		if (notificacionRepository.existsByUsuarioIdAndTituloAndMensaje(usuario.getId(), "Sistema", mensaje)) {
+			return;
+		}
 		notificacionRepository.save(Notificacion.builder()
 				.usuario(usuario)
 				.titulo("Sistema")
@@ -243,5 +259,17 @@ public class DataInitializer implements CommandLineRunner {
 				.tipoNotificacion(TipoNotificacion.SISTEMA)
 				.estadoNotificacion(EstadoNotificacion.NO_LEIDA)
 				.build());
+	}
+
+	private void crearSectorSiFalta(SectorGimnasio sector) {
+		if (sectorGimnasioRepository.findByNombre(sector.getNombre()).isEmpty()) {
+			sectorGimnasioRepository.save(sector);
+		}
+	}
+
+	private ClaseGimnasio crearClaseSiFalta(ClaseGimnasio clase) {
+		return claseGimnasioRepository.findFirstByNombreAndProfesorIdAndSectorOrderByIdAsc(
+				clase.getNombre(), clase.getProfesor().getId(), clase.getSector())
+				.orElseGet(() -> claseGimnasioRepository.save(clase));
 	}
 }

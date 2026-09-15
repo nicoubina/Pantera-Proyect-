@@ -33,6 +33,7 @@ public class SecurityConfig {
 
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 	private final UserDetailsService userDetailsService;
+	private final org.springframework.core.env.Environment environment;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -46,12 +47,15 @@ public class SecurityConfig {
 					response.setContentType("application/json");
 					response.getWriter().write("{\"message\":\"Debes iniciar sesion.\"}");
 				}))
-				.authorizeHttpRequests(auth -> auth
+				.authorizeHttpRequests(auth -> {
+					if (environment.getProperty("spring.h2.console.enabled", Boolean.class, false)) {
+						auth.requestMatchers(PathRequest.toH2Console()).permitAll();
+					}
+					auth
 						.requestMatchers("/api/auth/**").permitAll()
-						.requestMatchers(PathRequest.toH2Console()).permitAll()
 						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-						.anyRequest().authenticated()
-				)
+						.anyRequest().authenticated();
+				})
 				.authenticationProvider(authenticationProvider())
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 				.build();

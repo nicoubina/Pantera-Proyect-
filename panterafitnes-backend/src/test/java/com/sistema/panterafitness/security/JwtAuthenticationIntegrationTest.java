@@ -16,6 +16,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
+@org.springframework.test.context.ActiveProfiles("h2")
 @AutoConfigureMockMvc
 class JwtAuthenticationIntegrationTest {
     @Autowired MockMvc mvc;

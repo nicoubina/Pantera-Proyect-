@@ -1,6 +1,8 @@
 # Integración frontend/backend — punto 1
 
-Implementado el 9 de septiembre de 2026. Arquitectura: **Next.js → Spring Boot → H2**.
+Registro histórico del punto 1, implementado el 9 de septiembre de 2026 con H2.
+El punto 2 prepara **Next.js → Spring Boot → Supabase PostgreSQL**; consultar
+[README.md](README.md) para los perfiles y el estado de verificación actual.
 
 ## Resultado
 
@@ -96,7 +98,7 @@ Se ejecutaron los comandos de arranque de desarrollo. Las pruebas completas fina
 
 ## Ejecución y demo
 
-Ver `README.md` para los comandos completos. Configurar `NEXT_PUBLIC_API_URL=http://localhost:8080` en `panterafitnes/.env.local`; arrancar Spring Boot con JDK 21 y `./gradlew bootRun` (Windows: `./gradlew.bat bootRun`), y Next.js con `npm install` y `npm run dev`.
+Ver `README.md` para los comandos completos de H2 y Supabase. Configurar `NEXT_PUBLIC_API_URL=http://localhost:8080` en `panterafitnes/.env.local`; arrancar Spring Boot con JDK 21 y el perfil elegido, y Next.js con `npm install` y `npm run dev`.
 
 Login: `cliente@panterfitness.com`, `vencido@panterfitness.com`, `profesor@panterfitness.com` o `admin@panterfitness.com`, contraseña `123456`.
 
