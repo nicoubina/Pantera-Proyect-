@@ -1,5 +1,2 @@
-import AdminClasses from "@/components/clases/AdminClasses";
-
-export default function AdminClasesPage() {
-  return <AdminClasses />;
-}
+import ScheduleManagement from '@/components/modules/ScheduleManagement';
+export default function Page() { return <ScheduleManagement  />; }

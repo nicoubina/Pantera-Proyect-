@@ -13,7 +13,7 @@ export default function AppLayout({ children }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuth();
-  const { occupancy, loading, loadError, refresh } = useAppData();
+  const { occupancy, loading, loadError, refresh, alerts } = useAppData();
   const navItems = getNavigationItems(user.rol);
   const [scrolled, setScrolled] = useState(false);
   const [occOpen, setOccOpen] = useState(false);
@@ -123,6 +123,7 @@ export default function AppLayout({ children }) {
               ) : null}
             </div>
             <NotificationBell />
+            <button className="ghost-button mobile-logout" type="button" onClick={handleLogout}>Cerrar sesión</button>
             <div className="user-chip">
               <span>{user.nombre}</span>
               <small>{getRoleLabel(user.rol)}</small>
@@ -131,6 +132,7 @@ export default function AppLayout({ children }) {
         </header>
 
         <main className="page-content">
+          {user.rol !== "ADMINISTRADOR" && alerts.filter(a => a.activa).map(a => <section className={`alert-bar alert-${a.prioridad.toLowerCase()}`} role="status" key={a.id}><strong>{a.titulo} · {a.prioridad}</strong><p>{a.descripcion}</p></section>)}
           {loadError ? (
             <section className="warning-panel" role="alert">
               <p>{loadError}</p>

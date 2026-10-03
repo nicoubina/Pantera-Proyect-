@@ -6,18 +6,11 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { roleHomePaths } from "@/components/layout/navigation";
 
-const testUsers = [
-  { email: "cliente@panterfitness.com", icon: "bolt" },
-  { email: "vencido@panterfitness.com", icon: "bolt" },
-  { email: "profesor@panterfitness.com", icon: "sports" },
-  { email: "admin@panterfitness.com", icon: "shield" }
-];
-
 export default function LoginForm() {
   const router = useRouter();
   const { user, loading, login, sessionError } = useAuth();
-  const [email, setEmail] = useState("cliente@panterfitness.com");
-  const [password, setPassword] = useState("123456");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -162,44 +155,6 @@ export default function LoginForm() {
             )}
           </button>
         </form>
-
-        <div
-          style={{
-            marginTop: 24,
-            paddingTop: 20,
-            borderTop: "1px solid var(--color-border)"
-          }}
-        >
-          <p className="muted" style={{ fontSize: "0.78rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            Acceso rápido demo
-          </p>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: 8,
-              marginTop: 12
-            }}
-          >
-            {testUsers.map((testUser) => (
-              <button
-                className="ghost-button small"
-                key={testUser.email}
-                type="button"
-                style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-start" }}
-                onClick={() => {
-                  setEmail(testUser.email);
-                  setPassword("123456");
-                }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>
-                  {testUser.icon}
-                </span>
-                {testUser.email}
-              </button>
-            ))}
-          </div>
-        </div>
 
         <p className="auth-link">
           No tenes usuario? <Link href="/registro">Registrate como cliente</Link>

@@ -19,25 +19,44 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UsuarioController {
 
-	private final UsuarioService usuarioService;
+  private final UsuarioService usuarioService;
 
-	@GetMapping("/me")
-	public UsuarioResponse me() {
-		return usuarioService.obtenerPerfil();
-	}
+  @org.springframework.web.bind.annotation.PostMapping
+  @PreAuthorize("hasRole('ADMINISTRADOR')")
+  public UsuarioResponse crear(
+      @Valid @RequestBody com.sistema.panterafitness.dto.UsuarioAdminRequest r) {
+    return usuarioService.guardar(null, r);
+  }
 
-	@GetMapping
-	@PreAuthorize("hasRole('ADMINISTRADOR')")
-	public List<UsuarioResponse> listar() {
-		return usuarioService.listarTodos();
-	}
+  @org.springframework.web.bind.annotation.PutMapping("/{id}")
+  @PreAuthorize("hasRole('ADMINISTRADOR')")
+  public UsuarioResponse editar(
+      @PathVariable Long id,
+      @Valid @RequestBody com.sistema.panterafitness.dto.UsuarioAdminRequest r) {
+    return usuarioService.guardar(id, r);
+  }
 
-	@PatchMapping("/{id}/membresia")
-	@PreAuthorize("hasRole('ADMINISTRADOR')")
-	public UsuarioResponse actualizarMembresia(
-			@PathVariable Long id,
-			@Valid @RequestBody ActualizarMembresiaRequest request
-	) {
-		return usuarioService.actualizarMembresia(id, request);
-	}
+  @GetMapping("/{id}")
+  @PreAuthorize("hasRole('ADMINISTRADOR')")
+  public UsuarioResponse obtener(@PathVariable Long id) {
+    return usuarioService.obtener(id);
+  }
+
+  @GetMapping("/me")
+  public UsuarioResponse me() {
+    return usuarioService.obtenerPerfil();
+  }
+
+  @GetMapping
+  @PreAuthorize("hasRole('ADMINISTRADOR')")
+  public List<UsuarioResponse> listar() {
+    return usuarioService.listarTodos();
+  }
+
+  @PatchMapping("/{id}/membresia")
+  @PreAuthorize("hasRole('ADMINISTRADOR')")
+  public UsuarioResponse actualizarMembresia(
+      @PathVariable Long id, @Valid @RequestBody ActualizarMembresiaRequest request) {
+    return usuarioService.actualizarMembresia(id, request);
+  }
 }

@@ -8,19 +8,26 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface HorarioClaseRepository extends JpaRepository<HorarioClase, Long> {
-	java.util.Optional<HorarioClase> findFirstByClaseGimnasioIdAndDiaSemanaAndHoraInicioOrderByIdAsc(
-			Long claseId, com.sistema.panterafitness.enums.DiaSemana dia, java.time.LocalTime inicio);
+  @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+  @org.springframework.data.jpa.repository.Query("select e from HorarioClase e where e.id = :id")
+  java.util.Optional<HorarioClase> findLockedById(
+      @org.springframework.data.repository.query.Param("id") Long id);
 
-	List<HorarioClase> findByActivaTrueOrderByFechaAscHoraInicioAsc();
+  java.util.Optional<HorarioClase> findFirstByClaseGimnasioIdAndDiaSemanaAndHoraInicioOrderByIdAsc(
+      Long claseId, com.sistema.panterafitness.enums.DiaSemana dia, java.time.LocalTime inicio);
 
-	List<HorarioClase> findByActivaTrueAndFechaBetweenOrderByFechaAscHoraInicioAsc(LocalDate desde, LocalDate hasta);
+  List<HorarioClase> findByActivaTrueOrderByFechaAscHoraInicioAsc();
 
-	@Query("""
-			select h
-			from HorarioClase h
-			where h.activa = true
-			and h.claseGimnasio.profesor.id = :profesorId
-			order by h.fecha asc, h.horaInicio asc
-			""")
-	List<HorarioClase> findActivosByProfesorId(@Param("profesorId") Long profesorId);
+  List<HorarioClase> findByActivaTrueAndFechaBetweenOrderByFechaAscHoraInicioAsc(
+      LocalDate desde, LocalDate hasta);
+
+  @Query(
+      """
+      select h
+      from HorarioClase h
+      where h.activa = true
+      and h.claseGimnasio.profesor.id = :profesorId
+      order by h.fecha asc, h.horaInicio asc
+      """)
+  List<HorarioClase> findActivosByProfesorId(@Param("profesorId") Long profesorId);
 }

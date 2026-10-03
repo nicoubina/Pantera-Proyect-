@@ -152,6 +152,8 @@ export default function RegisterForm() {
               </span>
               <input
                 type="password"
+                minLength={6}
+                maxLength={72}
                 value={password}
                 onChange={(event) => handlePasswordChange(event.target.value)}
                 style={{ paddingLeft: 44 }}

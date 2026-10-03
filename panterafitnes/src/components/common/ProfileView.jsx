@@ -92,7 +92,7 @@ export default function ProfileView() {
             </div>
           ) : null}
         </article>
-        <QrSimulator />
+        {user.rol === ROLES.CLIENTE && <QrSimulator />}
       </section>
 
       <section className="panel">

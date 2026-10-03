@@ -35,3 +35,12 @@ UNION ALL SELECT 'reservas', count(*) FROM public.reservas
 UNION ALL SELECT 'lista_espera', count(*) FROM public.lista_espera
 UNION ALL SELECT 'asistencias', count(*) FROM public.asistencias
 UNION ALL SELECT 'notificaciones', count(*) FROM public.notificaciones;
+
+-- Después de la migración incremental: cinco tablas nuevas, todas con RLS.
+SELECT tablename, rowsecurity FROM pg_tables
+WHERE schemaname='public' AND tablename IN
+ ('penalizaciones','ejercicios','rutinas','rutina_ejercicios','alertas') ORDER BY tablename;
+-- Debe devolver cero filas.
+SELECT table_name, grantee, privilege_type FROM information_schema.table_privileges
+WHERE table_schema='public' AND grantee IN ('anon','authenticated','PUBLIC')
+AND table_name IN ('penalizaciones','ejercicios','rutinas','rutina_ejercicios','alertas');

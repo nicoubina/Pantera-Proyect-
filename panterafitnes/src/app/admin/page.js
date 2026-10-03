@@ -1,6 +1,2 @@
-import DashboardHome from "@/components/common/DashboardHome";
-import { ROLES } from "@/data/constants";
-
-export default function AdminHomePage() {
-  return <DashboardHome role={ROLES.ADMINISTRADOR} />;
-}
+import AdminDashboard from '@/components/modules/AdminDashboard';
+export default function Page() { return <AdminDashboard  />; }

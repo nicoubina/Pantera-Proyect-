@@ -6,10 +6,12 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ListaEsperaRepository extends JpaRepository<ListaEspera, Long> {
+  long countByActivaTrue();
 
-	List<ListaEspera> findByHorarioClaseIdAndActivaTrueOrderByFechaIngresoAsc(Long horarioClaseId);
+  List<ListaEspera> findByHorarioClaseIdAndActivaTrueOrderByFechaIngresoAsc(Long horarioClaseId);
 
-	Optional<ListaEspera> findByUsuarioIdAndHorarioClaseIdAndActivaTrue(Long usuarioId, Long horarioClaseId);
+  Optional<ListaEspera> findByUsuarioIdAndHorarioClaseIdAndActivaTrue(
+      Long usuarioId, Long horarioClaseId);
 
-	long countByHorarioClaseIdAndActivaTrue(Long horarioClaseId);
+  long countByHorarioClaseIdAndActivaTrue(Long horarioClaseId);
 }

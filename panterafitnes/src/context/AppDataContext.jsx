@@ -8,9 +8,10 @@ import { reservationService } from "@/services/reservationService";
 import { qrService } from "@/services/qrService";
 import { userService } from "@/services/userService";
 import { useAuth } from "@/context/AuthContext";
+import { modulesService } from "@/services/modulesService";
 
 const AppDataContext = createContext(null);
-const emptyData = { classes: [], reservations: [], occupancy: null, notifications: [], users: [], catalog: [] };
+const emptyData = { classes: [], reservations: [], occupancy: null, notifications: [], users: [], catalog: [], alerts: [] };
 
 export function AppDataProvider({ children }) {
   const { user } = useAuth();
@@ -29,16 +30,17 @@ export function AppDataProvider({ children }) {
     const session = generation.current;
     const version = ++requestVersion.current;
     try {
-      const [occupancy, classOccupancies, reservations, notifications, catalog, users] = await Promise.all([
+      const [occupancy, classOccupancies, reservations, notifications, catalog, users, alerts] = await Promise.all([
         occupancyService.getCurrentOccupancy(), occupancyService.getClassesOccupancy(),
         reservationService.getReservations(user.rol), notificationService.getByUser(),
         classService.getClasses(),
-        user.rol === "ADMINISTRADOR" ? userService.getAllUsers() : Promise.resolve([])
+        user.rol === "ADMINISTRADOR" ? userService.getAllUsers() : Promise.resolve([]),
+        modulesService.list("alertas")
       ]);
       if (session !== generation.current || version !== requestVersion.current) return;
       const classes = await classService.getWeeklyClasses(classOccupancies);
       if (session !== generation.current || version !== requestVersion.current) return;
-      setData({ classes, reservations, occupancy, notifications, catalog, users });
+      setData({ classes, reservations, occupancy, notifications, catalog, users, alerts });
       setLoadError("");
     } catch (error) {
       if (session === generation.current && version === requestVersion.current) setLoadError(error.message);
@@ -132,6 +134,7 @@ export function AppDataProvider({ children }) {
       await notificationService.markAllAsRead(data.notifications);
       return true;
     }, "Notificaciones marcadas como leídas."),
+    markNotificationAsRead: (id) => runAction(() => notificationService.markAsRead(id), "Notificación marcada como leída."),
     updateMembership: (id, membership) => runAction(() => userService.updateMembership(id, membership), "Membresía actualizada.")
   };
   return <AppDataContext.Provider value={value}>{children}</AppDataContext.Provider>;

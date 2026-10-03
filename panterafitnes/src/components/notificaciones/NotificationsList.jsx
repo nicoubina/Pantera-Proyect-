@@ -12,7 +12,7 @@ function formatDate(value) {
 }
 
 export default function NotificationsList() {
-  const { notifications } = useAppData();
+  const { notifications, markNotificationAsRead, pending } = useAppData();
 
   if (!notifications.length) {
     return (
@@ -36,6 +36,8 @@ export default function NotificationsList() {
             </div>
             <p>{notification.mensaje}</p>
             <span className="muted">{formatDate(notification.fecha)}</span>
+            <p className="muted">Tipo: {notification.tipo}</p>
+            {!notification.leida && <button className="secondary-button" disabled={pending} onClick={() => markNotificationAsRead(notification.id)}>Marcar como leída</button>}
           </div>
         </article>
       ))}

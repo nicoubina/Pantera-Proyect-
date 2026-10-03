@@ -127,3 +127,46 @@ await assert.rejects(() => authService.login("cliente@panterfitness.com", "wrong
 assert.equal(authService.getCurrentUser(), null);
 console.log("PASS admin membership, JWT cleanup and invalid login");
 console.log("All real frontend service integration checks passed.");
+
+const { modulesService } = await import("../src/services/modulesService.js");
+await authService.login("admin@panterfitness.com", "123456");
+const unique = Date.now();
+const newClient = await modulesService.save("usuarios", null, {
+  nombre: "Manual", apellido: "Integración", email: `modules-${unique}@example.test`,
+  password: "123456", rol: "CLIENTE", activo: true
+});
+const dayKey = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+const today = dayKey(new Date());
+const futureDate = dayKey(new Date(Date.now() + 3 * 86400000));
+await modulesService.membership(newClient.id, { estadoMembresia: "ACTIVA", fechaInicioMembresia: today, fechaVencimientoMembresia: futureDate });
+const professor = (await modulesService.list("usuarios")).find(u => u.email === "profesor@panterfitness.com");
+const createdClass = await modulesService.save("clases", null, { nombre: `Integración ${unique}`, descripcion: "Clase de prueba", profesorId: professor.id, sector: "SALA_CLASES", cupoMaximo: 2, activa: true });
+const createdSchedule = await modulesService.save("horarios", null, { claseGimnasioId: createdClass.id, fecha: futureDate, horaInicio: "10:00", horaFin: "11:00", cupoMaximo: 2, activa: true });
+await modulesService.save("horarios", createdSchedule.id, { claseGimnasioId: createdClass.id, fecha: futureDate, horaInicio: "10:00", horaFin: "11:00", cupoMaximo: 3, activa: true });
+const alert = await modulesService.save("alertas", null, { titulo: `Aviso ${unique}`, descripcion: "Aviso interno", activa: true, prioridad: "ALTA" });
+await authService.login(newClient.email, "123456");
+assert.equal((await modulesService.list("membresias/mi-membresia")).estado, "ACTIVA");
+assert.ok((await modulesService.list("alertas")).some(a => a.id === alert.id));
+await reservationService.createReservation(createdSchedule.id);
+assert.ok((await modulesService.list("asistencias")).some(a => a.estadoAsistencia === "PENDIENTE"));
+const clientNotifications = await modulesService.list("notificaciones/mis-notificaciones");
+await authService.login(professor.email, "123456");
+const exercise = await modulesService.save("ejercicios", null, { nombre: `Ejercicio ${unique}`, descripcion: "Control de técnica" });
+const routineBody = { nombre: `Rutina ${unique}`, descripcion: "Plan de prueba", clienteId: newClient.id, estado: "ACTIVA", ejercicios: [{ ejercicioId: exercise.id, series: 3, repeticiones: 10, pesoSugerido: 5, descanso: 60 }] };
+const routine = await modulesService.save("rutinas", null, routineBody);
+const edited = await modulesService.save("rutinas", routine.id, { ...routineBody, estado: "PAUSADA", ejercicios: [{ ...routineBody.ejercicios[0], series: 4 }] });
+assert.equal(edited.estado, "PAUSADA"); assert.equal(edited.ejercicios[0].series, 4);
+await authService.login(newClient.email, "123456");
+assert.equal((await modulesService.get("rutinas", routine.id)).ejercicios[0].ejercicio.nombre, exercise.nombre);
+await authService.login("vencido@panterfitness.com", "123456");
+await assert.rejects(() => modulesService.get("rutinas", routine.id), e => e.status === 403);
+await authService.login("admin@panterfitness.com", "123456");
+const penalty = await modulesService.save("penalizaciones", null, { usuarioId: newClient.id, motivo: "Revisión administrativa", fechaInicio: today, fechaFin: futureDate });
+assert.equal((await modulesService.cancelPenalty(penalty.id)).estado, "CANCELADA");
+await assert.rejects(() => apiRequest(`/api/notificaciones/${clientNotifications[0].id}/leer`, { method: "PATCH" }), e => e.status === 403);
+await modulesService.save("alertas", alert.id, { ...alert, activa: false });
+await modulesService.save("usuarios", newClient.id, { nombre: "Manual", apellido: "Actualizado", email: newClient.email, rol: "CLIENTE", activo: false });
+await assert.rejects(() => authService.login(newClient.email, "123456"), e => e.status === 401);
+await authService.login("admin@panterfitness.com", "123456");
+assert.ok((await modulesService.list("estadisticas")).clasesPopulares.length);
+console.log("PASS all new modules: users, memberships, classes, schedules, routine create/edit/ownership, alerts, penalties, statistics and notification ownership");

@@ -15,60 +15,82 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-	@ExceptionHandler(ResourceNotFoundException.class)
-	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public ErrorResponse handleNotFound(ResourceNotFoundException exception, HttpServletRequest request) {
-		return build(HttpStatus.NOT_FOUND, exception.getMessage(), request);
-	}
+  @ExceptionHandler(ResourceNotFoundException.class)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public ErrorResponse handleNotFound(
+      ResourceNotFoundException exception, HttpServletRequest request) {
+    return build(HttpStatus.NOT_FOUND, exception.getMessage(), request);
+  }
 
-	@ExceptionHandler(BusinessException.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ErrorResponse handleBusiness(BusinessException exception, HttpServletRequest request) {
-		return build(HttpStatus.BAD_REQUEST, exception.getMessage(), request);
-	}
+  @ExceptionHandler(BusinessException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorResponse handleBusiness(BusinessException exception, HttpServletRequest request) {
+    return build(HttpStatus.BAD_REQUEST, exception.getMessage(), request);
+  }
 
-	@ExceptionHandler(UnauthorizedException.class)
-	@ResponseStatus(HttpStatus.UNAUTHORIZED)
-	public ErrorResponse handleUnauthorized(UnauthorizedException exception, HttpServletRequest request) {
-		return build(HttpStatus.UNAUTHORIZED, exception.getMessage(), request);
-	}
+  @ExceptionHandler(UnauthorizedException.class)
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  public ErrorResponse handleUnauthorized(
+      UnauthorizedException exception, HttpServletRequest request) {
+    return build(HttpStatus.UNAUTHORIZED, exception.getMessage(), request);
+  }
 
-	@ExceptionHandler(AuthenticationException.class)
-	@ResponseStatus(HttpStatus.UNAUTHORIZED)
-	public ErrorResponse handleAuthentication(AuthenticationException exception, HttpServletRequest request) {
-		return build(HttpStatus.UNAUTHORIZED, "Credenciales invalidas o token no valido.", request);
-	}
+  @ExceptionHandler(AuthenticationException.class)
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  public ErrorResponse handleAuthentication(
+      AuthenticationException exception, HttpServletRequest request) {
+    return build(HttpStatus.UNAUTHORIZED, "Credenciales invalidas o token no valido.", request);
+  }
 
-	@ExceptionHandler({ForbiddenException.class, AccessDeniedException.class})
-	@ResponseStatus(HttpStatus.FORBIDDEN)
-	public ErrorResponse handleForbidden(Exception exception, HttpServletRequest request) {
-		return build(HttpStatus.FORBIDDEN, exception.getMessage(), request);
-	}
+  @ExceptionHandler({ForbiddenException.class, AccessDeniedException.class})
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public ErrorResponse handleForbidden(Exception exception, HttpServletRequest request) {
+    return build(HttpStatus.FORBIDDEN, exception.getMessage(), request);
+  }
 
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ErrorResponse handleValidation(MethodArgumentNotValidException exception, HttpServletRequest request) {
-		String message = exception.getBindingResult()
-				.getFieldErrors()
-				.stream()
-				.map(error -> error.getField() + ": " + error.getDefaultMessage())
-				.collect(Collectors.joining("; "));
-		return build(HttpStatus.BAD_REQUEST, message, request);
-	}
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorResponse handleValidation(
+      MethodArgumentNotValidException exception, HttpServletRequest request) {
+    String message =
+        exception.getBindingResult().getFieldErrors().stream()
+            .map(error -> error.getField() + ": " + error.getDefaultMessage())
+            .collect(Collectors.joining("; "));
+    return build(HttpStatus.BAD_REQUEST, message, request);
+  }
 
-	@ExceptionHandler(Exception.class)
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public ErrorResponse handleUnexpected(Exception exception, HttpServletRequest request) {
-		return build(HttpStatus.INTERNAL_SERVER_ERROR, "Error interno del servidor.", request);
-	}
+  @ExceptionHandler(Exception.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  public ErrorResponse handleUnexpected(Exception exception, HttpServletRequest request) {
+    return build(HttpStatus.INTERNAL_SERVER_ERROR, "Error interno del servidor.", request);
+  }
 
-	private ErrorResponse build(HttpStatus status, String message, HttpServletRequest request) {
-		return new ErrorResponse(
-				LocalDateTime.now(),
-				status.value(),
-				status.getReasonPhrase(),
-				message,
-				request.getRequestURI()
-		);
-	}
+  @ExceptionHandler({
+    org.springframework.http.converter.HttpMessageNotReadableException.class,
+    org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class
+  })
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorResponse handleInvalidInput(Exception exception, HttpServletRequest request) {
+    return build(
+        HttpStatus.BAD_REQUEST, "Revisa los campos, fechas y estados ingresados.", request);
+  }
+
+  @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+  @ResponseStatus(HttpStatus.CONFLICT)
+  public ErrorResponse handleConflict(Exception exception, HttpServletRequest request) {
+    return build(
+        HttpStatus.CONFLICT,
+        "El registro ya existe o tiene datos relacionados. Actualiza la pantalla y revisa los"
+            + " datos.",
+        request);
+  }
+
+  private ErrorResponse build(HttpStatus status, String message, HttpServletRequest request) {
+    return new ErrorResponse(
+        LocalDateTime.now(),
+        status.value(),
+        status.getReasonPhrase(),
+        message,
+        request.getRequestURI());
+  }
 }

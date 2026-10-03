@@ -32,46 +32,49 @@ import lombok.Setter;
 @Table(name = "asistencias")
 public class Asistencia {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "usuario_id", nullable = false)
-	private Usuario usuario;
+  @Column(nullable = false)
+  @Builder.Default
+  private Boolean penalizacionProcesada = false;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "reserva_id")
-	private Reserva reserva;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "usuario_id", nullable = false)
+  private Usuario usuario;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "horario_clase_id", nullable = false)
-	private HorarioClase horarioClase;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "reserva_id")
+  private Reserva reserva;
 
-	@Column(nullable = false)
-	private LocalDate fecha;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "horario_clase_id", nullable = false)
+  private HorarioClase horarioClase;
 
-	@Column(nullable = false)
-	private LocalTime horaProgramada;
+  @Column(nullable = false)
+  private LocalDate fecha;
 
-	@Column(nullable = false)
-	private LocalDateTime horaIngreso;
+  @Column(nullable = false)
+  private LocalTime horaProgramada;
 
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	private EstadoAsistencia estadoAsistencia;
+  private LocalDateTime horaIngreso;
 
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	private MetodoRegistro metodoRegistro;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private EstadoAsistencia estadoAsistencia;
 
-	@PrePersist
-	void prePersist() {
-		if (metodoRegistro == null) {
-			metodoRegistro = MetodoRegistro.QR_SIMULADO;
-		}
-		if (estadoAsistencia == null) {
-			estadoAsistencia = EstadoAsistencia.PENDIENTE;
-		}
-	}
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private MetodoRegistro metodoRegistro;
+
+  @PrePersist
+  void prePersist() {
+    if (metodoRegistro == null) {
+      metodoRegistro = MetodoRegistro.QR_SIMULADO;
+    }
+    if (estadoAsistencia == null) {
+      estadoAsistencia = EstadoAsistencia.PENDIENTE;
+    }
+  }
 }

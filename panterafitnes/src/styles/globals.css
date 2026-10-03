@@ -1481,3 +1481,23 @@ select:focus {
 .auth-card.stitch-auth {
   border-top: 3px solid var(--color-orange);
 }
+
+.sidebar { gap: 16px; overflow-y: auto; }
+.side-nav { gap: 4px; }
+.side-nav a { padding: 9px 12px; }
+.module-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.module-fields { border: 0; padding: 0; margin: 0; display: grid; gap: 16px; min-width: 0; }
+.module-editor { border-color: var(--color-orange); }
+.module-success { padding: 14px; border: 1px solid var(--color-green); border-radius: 8px; color: #bff8d2; background: var(--color-green-bg); }
+textarea { font: inherit; width: 100%; min-height: 100px; padding: 14px; background: #0d0d0d; color: var(--color-text); border: 1px solid var(--color-border-strong); border-radius: 8px; resize: vertical; }
+textarea:focus { outline: 2px solid var(--color-orange); }
+.mobile-logout { display: none; }
+.alert-bar { margin: 0 0 18px; }
+.alert-alta { border-color: var(--color-red); }
+.panel, .reservation-card { overflow-wrap: anywhere; }
+@media (max-width: 820px) {
+  .mobile-logout { display: block; }
+  .module-grid { grid-template-columns: 1fr; }
+  .bottom-nav { display: flex; overflow-x: auto; }
+  .bottom-nav a { flex: 0 0 90px; }
+}

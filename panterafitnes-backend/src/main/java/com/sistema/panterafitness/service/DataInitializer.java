@@ -34,242 +34,257 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@org.springframework.core.annotation.Order(10)
 @org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
-        name = "panterfitness.demo.enabled", havingValue = "true", matchIfMissing = true)
+    name = "panterfitness.demo.enabled",
+    havingValue = "true")
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 
-	private final UsuarioRepository usuarioRepository;
-	private final SectorGimnasioRepository sectorGimnasioRepository;
-	private final ClaseGimnasioRepository claseGimnasioRepository;
-	private final HorarioClaseRepository horarioClaseRepository;
-	private final ReservaRepository reservaRepository;
-	private final ListaEsperaRepository listaEsperaRepository;
-	private final NotificacionRepository notificacionRepository;
-	private final PasswordEncoder passwordEncoder;
+  private final UsuarioRepository usuarioRepository;
+  private final SectorGimnasioRepository sectorGimnasioRepository;
+  private final ClaseGimnasioRepository claseGimnasioRepository;
+  private final HorarioClaseRepository horarioClaseRepository;
+  private final ReservaRepository reservaRepository;
+  private final ListaEsperaRepository listaEsperaRepository;
+  private final NotificacionRepository notificacionRepository;
+  private final PasswordEncoder passwordEncoder;
 
-	@Override
-	@Transactional
-	public void run(String... args) {
-		LocalDate hoy = LocalDate.now();
-		Usuario clienteActivo = crearUsuario(
-				"Cliente",
-				"Activo",
-				"cliente@panterfitness.com",
-				Rol.CLIENTE,
-				EstadoMembresia.ACTIVA,
-				hoy.minusMonths(1),
-				hoy.plusMonths(1),
-				"QR-CLIENTE-ACTIVO"
-		);
-		crearUsuario(
-				"Cliente",
-				"Vencido",
-				"vencido@panterfitness.com",
-				Rol.CLIENTE,
-				EstadoMembresia.VENCIDA,
-				hoy.minusMonths(2),
-				hoy.minusDays(1),
-				"QR-CLIENTE-VENCIDO"
-		);
-		Usuario profesor = crearUsuario(
-				"Profesor",
-				"Demo",
-				"profesor@panterfitness.com",
-				Rol.PROFESOR,
-				EstadoMembresia.ACTIVA,
-				hoy.minusMonths(1),
-				hoy.plusYears(1),
-				"QR-PROFESOR-DEMO"
-		);
-		crearUsuario(
-				"Admin",
-				"Demo",
-				"admin@panterfitness.com",
-				Rol.ADMINISTRADOR,
-				EstadoMembresia.ACTIVA,
-				hoy.minusMonths(1),
-				hoy.plusYears(1),
-				"QR-ADMIN-DEMO"
-		);
+  @Override
+  @Transactional
+  public void run(String... args) {
+    LocalDate hoy = LocalDate.now();
+    Usuario clienteActivo =
+        crearUsuario(
+            "Cliente",
+            "Activo",
+            "cliente@panterfitness.com",
+            Rol.CLIENTE,
+            EstadoMembresia.ACTIVA,
+            hoy.minusMonths(1),
+            hoy.plusMonths(1),
+            "QR-CLIENTE-ACTIVO");
+    crearUsuario(
+        "Cliente",
+        "Vencido",
+        "vencido@panterfitness.com",
+        Rol.CLIENTE,
+        EstadoMembresia.VENCIDA,
+        hoy.minusMonths(2),
+        hoy.minusDays(1),
+        "QR-CLIENTE-VENCIDO");
+    Usuario profesor =
+        crearUsuario(
+            "Profesor",
+            "Pantera",
+            "profesor@panterfitness.com",
+            Rol.PROFESOR,
+            EstadoMembresia.ACTIVA,
+            hoy.minusMonths(1),
+            hoy.plusYears(1),
+            "QR-PROFESOR-DEMO");
+    crearUsuario(
+        "Admin",
+        "Pantera",
+        "admin@panterfitness.com",
+        Rol.ADMINISTRADOR,
+        EstadoMembresia.ACTIVA,
+        hoy.minusMonths(1),
+        hoy.plusYears(1),
+        "QR-ADMIN-DEMO");
 
-		crearSectorSiFalta(SectorGimnasio.builder()
-				.nombre(Sector.MUSCULACION)
-				.capacidadMaxima(40)
-				.ocupacionActual(18)
-				.activo(true)
-				.build());
-		crearSectorSiFalta(SectorGimnasio.builder()
-				.nombre(Sector.SALA_CLASES)
-				.capacidadMaxima(20)
-				.ocupacionActual(7)
-				.activo(true)
-				.build());
+    crearSectorSiFalta(
+        SectorGimnasio.builder()
+            .nombre(Sector.MUSCULACION)
+            .capacidadMaxima(40)
+            .ocupacionActual(18)
+            .activo(true)
+            .build());
+    crearSectorSiFalta(
+        SectorGimnasio.builder()
+            .nombre(Sector.SALA_CLASES)
+            .capacidadMaxima(20)
+            .ocupacionActual(7)
+            .activo(true)
+            .build());
 
-		ClaseGimnasio funcional = crearClaseSiFalta(ClaseGimnasio.builder()
-				.nombre("Funcional")
-				.descripcion("Entrenamiento funcional grupal para fuerza y resistencia.")
-				.profesor(profesor)
-				.sector(Sector.SALA_CLASES)
-				.cupoMaximo(20)
-				.activa(true)
-				.build());
-		ClaseGimnasio musculacion = crearClaseSiFalta(ClaseGimnasio.builder()
-				.nombre("Musculacion")
-				.descripcion("Clase guiada de tecnica y rutina basica de musculacion.")
-				.profesor(profesor)
-				.sector(Sector.MUSCULACION)
-				.cupoMaximo(20)
-				.activa(true)
-				.build());
+    ClaseGimnasio funcional =
+        crearClaseSiFalta(
+            ClaseGimnasio.builder()
+                .nombre("Funcional")
+                .descripcion("Entrenamiento funcional grupal para fuerza y resistencia.")
+                .profesor(profesor)
+                .sector(Sector.SALA_CLASES)
+                .cupoMaximo(20)
+                .activa(true)
+                .build());
+    ClaseGimnasio musculacion =
+        crearClaseSiFalta(
+            ClaseGimnasio.builder()
+                .nombre("Musculacion")
+                .descripcion("Clase guiada de tecnica y rutina basica de musculacion.")
+                .profesor(profesor)
+                .sector(Sector.MUSCULACION)
+                .cupoMaximo(20)
+                .activa(true)
+                .build());
 
-		crearHorario(funcional, DayOfWeek.MONDAY, LocalTime.of(18, 0), LocalTime.of(19, 0));
-		crearHorario(funcional, DayOfWeek.WEDNESDAY, LocalTime.of(18, 0), LocalTime.of(19, 0));
-		HorarioClase funcionalViernes = crearHorario(funcional, DayOfWeek.FRIDAY, LocalTime.of(18, 0), LocalTime.of(19, 0));
-		crearHorario(musculacion, DayOfWeek.TUESDAY, LocalTime.of(19, 0), LocalTime.of(20, 0));
-		crearHorario(musculacion, DayOfWeek.THURSDAY, LocalTime.of(19, 0), LocalTime.of(20, 0));
+    crearHorario(funcional, DayOfWeek.MONDAY, LocalTime.of(18, 0), LocalTime.of(19, 0));
+    crearHorario(funcional, DayOfWeek.WEDNESDAY, LocalTime.of(18, 0), LocalTime.of(19, 0));
+    HorarioClase funcionalViernes =
+        crearHorario(funcional, DayOfWeek.FRIDAY, LocalTime.of(18, 0), LocalTime.of(19, 0));
+    crearHorario(musculacion, DayOfWeek.TUESDAY, LocalTime.of(19, 0), LocalTime.of(20, 0));
+    crearHorario(musculacion, DayOfWeek.THURSDAY, LocalTime.of(19, 0), LocalTime.of(20, 0));
 
-		sembrarHorarioLleno(funcionalViernes);
-		crearNotificacionBienvenida(clienteActivo);
-		crearNotificacionSistema(profesor, "Tenes clases asignadas para la semana.");
-	}
+    sembrarHorarioLleno(funcionalViernes);
+    crearNotificacionBienvenida(clienteActivo);
+    crearNotificacionSistema(profesor, "Tenes clases asignadas para la semana.");
+  }
 
-	private Usuario crearUsuario(
-			String nombre,
-			String apellido,
-			String email,
-			Rol rol,
-			EstadoMembresia estadoMembresia,
-			LocalDate inicio,
-			LocalDate vencimiento,
-			String qr
-	) {
-		var existente = usuarioRepository.findByEmail(email);
-		if (existente.isPresent()) {
-			return existente.get();
-		}
-		return usuarioRepository.save(Usuario.builder()
-				.nombre(nombre)
-				.apellido(apellido)
-				.email(email)
-				.password(passwordEncoder.encode("123456"))
-				.rol(rol)
-				.estadoMembresia(estadoMembresia)
-				.fechaInicioMembresia(inicio)
-				.fechaVencimientoMembresia(vencimiento)
-				.activo(true)
-				.qrSimulado(qr)
-				.build());
-	}
+  private Usuario crearUsuario(
+      String nombre,
+      String apellido,
+      String email,
+      Rol rol,
+      EstadoMembresia estadoMembresia,
+      LocalDate inicio,
+      LocalDate vencimiento,
+      String qr) {
+    var existente = usuarioRepository.findByEmail(email);
+    if (existente.isPresent()) {
+      return existente.get();
+    }
+    return usuarioRepository.save(
+        Usuario.builder()
+            .nombre(nombre)
+            .apellido(apellido)
+            .email(email)
+            .password(passwordEncoder.encode("123456"))
+            .rol(rol)
+            .estadoMembresia(estadoMembresia)
+            .fechaInicioMembresia(inicio)
+            .fechaVencimientoMembresia(vencimiento)
+            .activo(true)
+            .qrSimulado(qr)
+            .build());
+  }
 
-	private HorarioClase crearHorario(ClaseGimnasio clase, DayOfWeek dayOfWeek, LocalTime inicio, LocalTime fin) {
-		// Reutilizar incluso horarios pasados/inactivos: reiniciar no genera otra semana.
-		var existente = horarioClaseRepository
-				.findFirstByClaseGimnasioIdAndDiaSemanaAndHoraInicioOrderByIdAsc(
-						clase.getId(), DiaSemana.from(dayOfWeek), inicio);
-		if (existente.isPresent()) {
-			return existente.get();
-		}
-		LocalDate fecha = proximaFecha(dayOfWeek, inicio);
-		return horarioClaseRepository.save(HorarioClase.builder()
-				.claseGimnasio(clase)
-				.diaSemana(DiaSemana.from(dayOfWeek))
-				.fecha(fecha)
-				.horaInicio(inicio)
-				.horaFin(fin)
-				.cupoMaximo(clase.getCupoMaximo())
-				.activa(true)
-				.build());
-	}
+  private HorarioClase crearHorario(
+      ClaseGimnasio clase, DayOfWeek dayOfWeek, LocalTime inicio, LocalTime fin) {
+    // Reutilizar incluso horarios pasados/inactivos: reiniciar no genera otra semana.
+    var existente =
+        horarioClaseRepository.findFirstByClaseGimnasioIdAndDiaSemanaAndHoraInicioOrderByIdAsc(
+            clase.getId(), DiaSemana.from(dayOfWeek), inicio);
+    if (existente.isPresent()) {
+      return existente.get();
+    }
+    LocalDate fecha = proximaFecha(dayOfWeek, inicio);
+    return horarioClaseRepository.save(
+        HorarioClase.builder()
+            .claseGimnasio(clase)
+            .diaSemana(DiaSemana.from(dayOfWeek))
+            .fecha(fecha)
+            .horaInicio(inicio)
+            .horaFin(fin)
+            .cupoMaximo(clase.getCupoMaximo())
+            .activa(true)
+            .build());
+  }
 
-	private LocalDate proximaFecha(DayOfWeek dayOfWeek, LocalTime inicio) {
-		LocalDate hoy = LocalDate.now();
-		int dias = (dayOfWeek.getValue() - hoy.getDayOfWeek().getValue() + 7) % 7;
-		LocalDate fecha = hoy.plusDays(dias);
-		if (!fecha.atTime(inicio).isAfter(LocalDateTime.now().plusMinutes(30))) {
-			fecha = fecha.plusWeeks(1);
-		}
-		return fecha;
-	}
+  private LocalDate proximaFecha(DayOfWeek dayOfWeek, LocalTime inicio) {
+    LocalDate hoy = LocalDate.now();
+    int dias = (dayOfWeek.getValue() - hoy.getDayOfWeek().getValue() + 7) % 7;
+    LocalDate fecha = hoy.plusDays(dias);
+    if (!fecha.atTime(inicio).isAfter(LocalDateTime.now().plusMinutes(30))) {
+      fecha = fecha.plusWeeks(1);
+    }
+    return fecha;
+  }
 
-	private void sembrarHorarioLleno(HorarioClase horario) {
-		// No volver a llenar una clase cuyas reservas ya fueron canceladas o atendidas.
-		if (reservaRepository.existsByHorarioClaseId(horario.getId())) {
-			return;
-		}
-		List<Usuario> clientes = new ArrayList<>();
-		for (int i = 1; i <= horario.getCupoMaximo(); i++) {
-			String numero = String.format("%02d", i);
-			clientes.add(crearUsuario(
-					"Cliente",
-					"Cupo " + numero,
-					"cupo" + numero + "@panterfitness.com",
-					Rol.CLIENTE,
-					EstadoMembresia.ACTIVA,
-					LocalDate.now().minusMonths(1),
-					LocalDate.now().plusMonths(1),
-					"QR-CUPO-" + numero
-			));
-		}
+  private void sembrarHorarioLleno(HorarioClase horario) {
+    // No volver a llenar una clase cuyas reservas ya fueron canceladas o atendidas.
+    if (reservaRepository.existsByHorarioClaseId(horario.getId())) {
+      return;
+    }
+    List<Usuario> clientes = new ArrayList<>();
+    for (int i = 1; i <= horario.getCupoMaximo(); i++) {
+      String numero = String.format("%02d", i);
+      clientes.add(
+          crearUsuario(
+              "Cliente",
+              "Cupo " + numero,
+              "cupo" + numero + "@panterfitness.com",
+              Rol.CLIENTE,
+              EstadoMembresia.ACTIVA,
+              LocalDate.now().minusMonths(1),
+              LocalDate.now().plusMonths(1),
+              "QR-CUPO-" + numero));
+    }
 
-		for (Usuario cliente : clientes) {
-			reservaRepository.save(Reserva.builder()
-					.usuario(cliente)
-					.horarioClase(horario)
-					.estadoReserva(EstadoReserva.CONFIRMADA)
-					.build());
-		}
+    for (Usuario cliente : clientes) {
+      reservaRepository.save(
+          Reserva.builder()
+              .usuario(cliente)
+              .horarioClase(horario)
+              .estadoReserva(EstadoReserva.CONFIRMADA)
+              .build());
+    }
 
-		Usuario esperaDemo = crearUsuario(
-				"Cliente",
-				"Espera",
-				"espera@panterfitness.com",
-				Rol.CLIENTE,
-				EstadoMembresia.ACTIVA,
-				LocalDate.now().minusMonths(1),
-				LocalDate.now().plusMonths(1),
-				"QR-CLIENTE-ESPERA"
-		);
-		reservaRepository.save(Reserva.builder()
-				.usuario(esperaDemo)
-				.horarioClase(horario)
-				.estadoReserva(EstadoReserva.EN_ESPERA)
-				.build());
-		listaEsperaRepository.save(ListaEspera.builder()
-				.usuario(esperaDemo)
-				.horarioClase(horario)
-				.posicion(1)
-				.activa(true)
-				.build());
-		crearNotificacionSistema(esperaDemo, "Quedaste en lista de espera para Funcional.");
-	}
+    Usuario esperaDemo =
+        crearUsuario(
+            "Cliente",
+            "Espera",
+            "espera@panterfitness.com",
+            Rol.CLIENTE,
+            EstadoMembresia.ACTIVA,
+            LocalDate.now().minusMonths(1),
+            LocalDate.now().plusMonths(1),
+            "QR-CLIENTE-ESPERA");
+    reservaRepository.save(
+        Reserva.builder()
+            .usuario(esperaDemo)
+            .horarioClase(horario)
+            .estadoReserva(EstadoReserva.EN_ESPERA)
+            .build());
+    listaEsperaRepository.save(
+        ListaEspera.builder()
+            .usuario(esperaDemo)
+            .horarioClase(horario)
+            .posicion(1)
+            .activa(true)
+            .build());
+    crearNotificacionSistema(esperaDemo, "Quedaste en lista de espera para Funcional.");
+  }
 
-	private void crearNotificacionBienvenida(Usuario usuario) {
-		crearNotificacionSistema(usuario, "Bienvenido a panterfitness. Tu usuario de prueba esta listo.");
-	}
+  private void crearNotificacionBienvenida(Usuario usuario) {
+    crearNotificacionSistema(usuario, "Bienvenido a Pantera Fitness.");
+  }
 
-	private void crearNotificacionSistema(Usuario usuario, String mensaje) {
-		if (notificacionRepository.existsByUsuarioIdAndTituloAndMensaje(usuario.getId(), "Sistema", mensaje)) {
-			return;
-		}
-		notificacionRepository.save(Notificacion.builder()
-				.usuario(usuario)
-				.titulo("Sistema")
-				.mensaje(mensaje)
-				.tipoNotificacion(TipoNotificacion.SISTEMA)
-				.estadoNotificacion(EstadoNotificacion.NO_LEIDA)
-				.build());
-	}
+  private void crearNotificacionSistema(Usuario usuario, String mensaje) {
+    if (notificacionRepository.existsByUsuarioIdAndTituloAndMensaje(
+        usuario.getId(), "Sistema", mensaje)) {
+      return;
+    }
+    notificacionRepository.save(
+        Notificacion.builder()
+            .usuario(usuario)
+            .titulo("Sistema")
+            .mensaje(mensaje)
+            .tipoNotificacion(TipoNotificacion.SISTEMA)
+            .estadoNotificacion(EstadoNotificacion.NO_LEIDA)
+            .build());
+  }
 
-	private void crearSectorSiFalta(SectorGimnasio sector) {
-		if (sectorGimnasioRepository.findByNombre(sector.getNombre()).isEmpty()) {
-			sectorGimnasioRepository.save(sector);
-		}
-	}
+  private void crearSectorSiFalta(SectorGimnasio sector) {
+    if (sectorGimnasioRepository.findByNombre(sector.getNombre()).isEmpty()) {
+      sectorGimnasioRepository.save(sector);
+    }
+  }
 
-	private ClaseGimnasio crearClaseSiFalta(ClaseGimnasio clase) {
-		return claseGimnasioRepository.findFirstByNombreAndProfesorIdAndSectorOrderByIdAsc(
-				clase.getNombre(), clase.getProfesor().getId(), clase.getSector())
-				.orElseGet(() -> claseGimnasioRepository.save(clase));
-	}
+  private ClaseGimnasio crearClaseSiFalta(ClaseGimnasio clase) {
+    return claseGimnasioRepository
+        .findFirstByNombreAndProfesorIdAndSectorOrderByIdAsc(
+            clase.getNombre(), clase.getProfesor().getId(), clase.getSector())
+        .orElseGet(() -> claseGimnasioRepository.save(clase));
+  }
 }

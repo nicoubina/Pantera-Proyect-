@@ -1,6 +1,10 @@
 # Pantera Fitness
 
-Aplicación para gestionar un gimnasio: usuarios, clases, reservas, lista de espera, ocupación, notificaciones y un ingreso con QR simulado.
+Aplicación para gestionar un gimnasio: usuarios, membresías, clases, reservas, lista de espera, asistencias, penalizaciones, rutinas, alertas, ocupación, notificaciones y un ingreso con QR simulado.
+
+La revisión integral del 03/10/2026 está documentada en [REVISION_FINAL.md](REVISION_FINAL.md): módulos, endpoints, las 39 rutas finales, pruebas, cuentas y capturas recomendadas para el Manual de Usuario.
+
+**Si usás la base Supabase existente**, aplicá [la migración incremental](supabase/migrations/20261003205829_complete_panterfitness_modules.sql) antes de arrancar esta versión. No vuelvas a ejecutar la migración inicial sobre esa base.
 
 ## Antes de empezar
 
@@ -79,7 +83,7 @@ Solo si vas a usar **otro proyecto vacío** de Supabase:
 3. Copiá el contenido completo de [001_create_panterfitness_schema.sql](supabase/migrations/001_create_panterfitness_schema.sql).
 4. Ejecutalo una sola vez.
 
-Esto crea las tablas. Los usuarios demo se crearán cuando arranque el backend.
+Esto crea las tablas iniciales. Ejecutá luego [la migración incremental](supabase/migrations/20261003205829_complete_panterfitness_modules.sql). Los usuarios de prueba se crearán cuando arranque el backend con `PANTERFITNESS_DEMO_ENABLED=true`.
 
 #### 2. Crear el archivo de configuración
 
@@ -182,6 +186,7 @@ Con los datos demo habilitados, podés usar estas cuentas:
 | vencido@panterfitness.com | 123456 | Cliente con membresía vencida |
 | profesor@panterfitness.com | 123456 | Profesor |
 | admin@panterfitness.com | 123456 | Administrador |
+| sancionado@panterfitness.com | 123456 | Cliente con penalización activa |
 
 Para una primera prueba, entrá con **cliente@panterfitness.com / 123456**.
 
@@ -260,7 +265,7 @@ Spring Boot maneja login, JWT, roles y reglas de negocio. Supabase solo se usa c
 
 ### Base de datos
 
-- Tablas: `usuarios`, `sectores_gimnasio`, `clases_gimnasio`, `horarios_clase`, `reservas`, `lista_espera`, `asistencias` y `notificaciones`.
+- Tablas: `usuarios`, `sectores_gimnasio`, `clases_gimnasio`, `horarios_clase`, `reservas`, `lista_espera`, `asistencias`, `notificaciones`, `penalizaciones`, `ejercicios`, `rutinas`, `rutina_ejercicios` y `alertas`.
 - [Migración SQL](supabase/migrations/001_create_panterfitness_schema.sql): crea tablas, relaciones, restricciones e índices.
 - [Consulta de verificación](supabase/verify_panterfitness.sql): revisa tablas, RLS y duplicados.
 - Supabase usa `ddl-auto=validate`: comprueba las tablas sin crearlas ni eliminarlas.
@@ -300,7 +305,7 @@ La prueba de integración necesita dos horarios disponibles y una clase llena a 
 
 La migración se aplicó y se verificaron las ocho tablas, las restricciones, los índices y RLS. La versión registrada en Supabase es `20260914232352`.
 
-La validación de arranque JDBC, endpoints y persistencia entre reinicios quedó pendiente en la entrega de la migración. Las pruebas Java agregadas no se ejecutaron: se preparó Java 21 temporal, pero se rechazó la ejecución de Gradle. El build del frontend tampoco se inició por falta de npm. Esta guía no implica que esas pruebas hayan pasado.
+En la revisión del 03/10/2026 pasaron las 19 pruebas Java, el arranque H2, la integración HTTP y el build de Next.js. Se verificaron login y navegación por los tres roles. La nueva migración incremental pasó en PostgreSQL temporal, conservando datos y verificando relaciones y RLS. Su aplicación al proyecto Supabase y el arranque JDBC contra esa base real siguen pendientes. Consultá [el informe final](REVISION_FINAL.md) para el detalle y los límites de validación.
 
 El asesor de Supabase señaló permisos de ejecución en la función preexistente `public.rls_auto_enable()`; queda por revisar [ese aviso](https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable).
 

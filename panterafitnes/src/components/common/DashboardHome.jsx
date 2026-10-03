@@ -169,7 +169,7 @@ export default function DashboardHome({ role }) {
           </Link>
           <Link
             className="panel link-button card-glow"
-            href="/cliente/perfil"
+            href="/cliente/qr"
             style={{ display: "flex", alignItems: "center", gap: 16, minHeight: 56, textDecoration: "none" }}
           >
             <span className="material-symbols-outlined" style={{ fontSize: 28, color: "var(--color-orange)" }}>
@@ -202,12 +202,12 @@ export default function DashboardHome({ role }) {
         <PageHeader
           eyebrow="Inicio profesor"
           title="Clases asignadas y asistencia"
-          description="Vista preparada para seguimiento de cupos, alumnos y check-in."
+          description="Seguimiento de cupos y alumnos de tus clases. Consultá el historial desde Asistencias."
         />
         <section className="metric-grid">
           <MetricCard icon="fitness_center" label="Clases asignadas" value={assignedClasses.length} detail="Semana actual" />
           <MetricCard icon="groups" label="Alumnos inscriptos" value={professorReservations.length} detail="Confirmados y espera" />
-          <MetricCard icon="qr_code" label="Check-in" value="Simulado" detail="Pantalla preparada para QR" />
+          <MetricCard icon="checklist" label="Asistencias registradas" value={reservations.filter(r => r.estado === RESERVA_ESTADOS.ASISTIDA).length} detail="Alumnos de tus clases" />
           <MetricCard icon="monitoring" label="Ocupacion gimnasio" value={occupancy ? `${occupancy.total.porcentaje}%` : "..."} detail="Actualiza cada 10 segundos" />
         </section>
         <section className="panel">

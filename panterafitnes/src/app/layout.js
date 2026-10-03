@@ -3,7 +3,7 @@ import "@/styles/globals.css";
 
 export const metadata = {
   title: "Pantera Fitness",
-  description: "MVP frontend simulado de Pantera Fitness"
+  description: "Gestión de entrenamiento y clases de Pantera Fitness"
 };
 
 export default function RootLayout({ children }) {

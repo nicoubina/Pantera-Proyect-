@@ -6,9 +6,11 @@ import PageHeader from "@/components/common/PageHeader";
 import StatusPill from "@/components/common/StatusPill";
 import { RESERVA_ESTADOS } from "@/services/reservationService";
 import { useAppData } from "@/context/AppDataContext";
+import { useState } from "react";
 
 export default function AdminReservations() {
-  const { classes, reservations } = useAppData();
+  const { classes, reservations, cancelReservation, pending } = useAppData();
+  const [confirm, setConfirm] = useState(null);
   const waitList = reservations.filter((reservation) => reservation.estado === RESERVA_ESTADOS.EN_ESPERA);
   const confirmed = reservations.filter((reservation) => reservation.estado === RESERVA_ESTADOS.CONFIRMADA);
 
@@ -41,6 +43,9 @@ export default function AdminReservations() {
                 <StatusPill tone={reservation.estado === RESERVA_ESTADOS.EN_ESPERA ? "warning" : "neutral"}>
                   {reservation.estado}
                 </StatusPill>
+                {["CONFIRMADA", "EN_ESPERA"].includes(reservation.estado) && (confirm === reservation.id
+                  ? <div className="actions-row"><button className="secondary-button" disabled={pending} onClick={async () => { if (await cancelReservation(reservation.id)) setConfirm(null); }}>Sí, cancelar</button><button className="ghost-button" onClick={() => setConfirm(null)}>Mantener</button></div>
+                  : <button className="ghost-button" onClick={() => setConfirm(reservation.id)}>Cancelar reserva</button>)}
               </article>
             );
           })}
