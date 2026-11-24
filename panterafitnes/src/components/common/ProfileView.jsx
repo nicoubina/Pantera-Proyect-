@@ -59,7 +59,7 @@ export default function ProfileView() {
             </div>
             {user.rol === ROLES.CLIENTE ? (
               <div>
-                <dt>Membresia</dt>
+                <dt>Membresía</dt>
                 <dd>
                   <StatusPill tone={isActiveMembership ? "success" : "danger"}>
                     {user.membresia}
@@ -86,8 +86,8 @@ export default function ProfileView() {
               </div>
               <p className="muted" style={{ marginTop: 8, fontSize: "0.78rem" }}>
                 {isActiveMembership
-                  ? "Tu membresia esta activa y dentro del ciclo mensual."
-                  : "Tu membresia vencio. Renovala para reservar clases."}
+                  ? "Tu membresía está activa y dentro del ciclo mensual."
+                  : "Tu membresía venció. Renovala para reservar clases."}
               </p>
             </div>
           ) : null}

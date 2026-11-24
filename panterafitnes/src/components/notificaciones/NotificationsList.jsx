@@ -18,7 +18,7 @@ export default function NotificationsList() {
     return (
       <EmptyState
         title="Sin notificaciones"
-        description="Las acciones de reserva, espera, cancelacion y QR generan mensajes internos."
+        description="Las acciones de reserva, espera, cancelación y QR generan mensajes internos."
       />
     );
   }

@@ -53,7 +53,7 @@ export default function ProfessorClasses() {
       <PageHeader
         eyebrow="Profesor"
         title="Mis clases asignadas"
-        description="Ocupacion, alumnos inscriptos y asistencia simulada."
+        description="Ocupación, alumnos inscriptos y asistencia simulada."
       />
 
       <section className="split-grid">

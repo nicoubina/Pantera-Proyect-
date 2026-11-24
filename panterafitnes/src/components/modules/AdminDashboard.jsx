@@ -39,7 +39,7 @@ export default function AdminDashboard() {
             <h3>Clases más populares</h3>
             {d.clasesPopulares.map((c) => (
               <p key={c.claseId}>
-                {c.nombre}: {c.reservas} reservas
+                {c.nombre}: {c.reservas} {c.reservas === 1 ? "reserva" : "reservas"}
               </p>
             ))}
           </section>
@@ -47,8 +47,8 @@ export default function AdminDashboard() {
             <h3>Horarios más utilizados</h3>
             {d.horariosUtilizados.map((h) => (
               <p key={h.horarioId}>
-                {h.clase} · {h.fecha} {h.hora.slice(0, 5)}: {h.reservas}{" "}
-                reservas
+                {h.clase} · {String(h.fecha).split("-").reverse().join("/")} {h.hora.slice(0, 5)}:{" "}
+                {h.reservas} {h.reservas === 1 ? "reserva" : "reservas"}
               </p>
             ))}
             {!d.horariosUtilizados.length && <p>Sin reservas registradas.</p>}

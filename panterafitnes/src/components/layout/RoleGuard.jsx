@@ -30,7 +30,7 @@ export default function RoleGuard({ allowedRole, children }) {
       <main className="auth-screen">
         <section className="auth-card">
           <p className="eyebrow">Pantera Fitness</p>
-          <h1>Validando sesion...</h1>
+          <h1>Validando sesión...</h1>
         </section>
       </main>
     );

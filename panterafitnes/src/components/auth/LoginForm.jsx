@@ -93,7 +93,7 @@ export default function LoginForm() {
             </div>
           </label>
           <label>
-            Password
+            Contraseña
             <div style={{ position: "relative" }}>
               <span
                 className="material-symbols-outlined"

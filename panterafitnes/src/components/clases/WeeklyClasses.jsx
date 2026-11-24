@@ -109,7 +109,7 @@ export default function WeeklyClasses() {
               >
                 <span style={{ display: "grid", gap: 4, textAlign: "left" }}>
                   <h3>{dayClasses[0].diaNombre}</h3>
-                  <span>{date}</span>
+                  <span>{date.split("-").reverse().join("/")}</span>
                 </span>
                 <span className="material-symbols-outlined rotate-icon">expand_more</span>
               </button>
@@ -149,7 +149,7 @@ export default function WeeklyClasses() {
                           <dd>{classItem.hora}</dd>
                         </div>
                         <div>
-                          <dt>Duracion</dt>
+                          <dt>Duración</dt>
                           <dd>{classItem.duracionMinutos} min</dd>
                         </div>
                         <div>
@@ -172,7 +172,11 @@ export default function WeeklyClasses() {
 
                       {ownReservation ? (
                         <StatusPill tone={ownReservation.estado === "CONFIRMADA" ? "success" : "warning"}>
-                          Ya tenes estado {ownReservation.estado}
+                          {ownReservation.estado === "CONFIRMADA"
+                            ? "Ya tenés lugar reservado"
+                            : ownReservation.estado === "EN_ESPERA"
+                              ? "Estás en lista de espera"
+                              : `Reserva ${ownReservation.estado.toLowerCase()}`}
                         </StatusPill>
                       ) : availability.estado === "Completa" ? (
                         <button

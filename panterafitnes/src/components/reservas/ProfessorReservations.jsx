@@ -47,7 +47,7 @@ export default function ProfessorReservations() {
           })}
         </section>
       ) : (
-        <EmptyState title="Sin reservas" description="Todavia no hay alumnos inscriptos." />
+        <EmptyState title="Sin reservas" description="Todavía no hay alumnos inscriptos." />
       )}
     </div>
   );

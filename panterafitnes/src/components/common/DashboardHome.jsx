@@ -93,7 +93,10 @@ export default function DashboardHome({ role }) {
               >
                 event_available
               </span>{" "}
-              Tenés <strong>{`${myReservations.filter((item) => item.estado === RESERVA_ESTADOS.CONFIRMADA).length} reservas`}</strong> confirmadas esta semana
+              {(() => {
+                const confirmadas = myReservations.filter((item) => item.estado === RESERVA_ESTADOS.CONFIRMADA).length;
+                return <>Tenés <strong>{`${confirmadas} ${confirmadas === 1 ? "reserva" : "reservas"}`}</strong> {confirmadas === 1 ? "confirmada" : "confirmadas"}</>;
+              })()}
             </p>
           </div>
           <div
@@ -125,14 +128,14 @@ export default function DashboardHome({ role }) {
         <section className="metric-grid">
           <MetricCard
             icon="shield"
-            label="Membresia"
+            label="Membresía"
             value={user.membresia}
             detail={user.membresia === "ACTIVA" ? "Habilitado para reservar" : "Reserva bloqueada"}
             tone={user.membresia === "ACTIVA" ? "success" : "danger"}
           />
           <MetricCard
             icon="calendar_month"
-            label="Proxima reserva"
+            label="Próxima reserva"
             value={nextClass ? nextClass.nombre : "Sin reserva"}
             detail={nextClass ? `${nextClass.diaNombre} ${nextClass.hora}` : "Reserva desde Clases"}
           />
@@ -162,7 +165,7 @@ export default function DashboardHome({ role }) {
             <span style={{ flex: 1 }}>
               <strong style={{ display: "block" }}>Reservar clase</strong>
               <span className="muted" style={{ fontSize: "0.85rem" }}>
-                Mira la grilla semanal y reservá tu lugar
+                Mirá la grilla semanal y reservá tu lugar
               </span>
             </span>
             <span className="material-symbols-outlined muted">chevron_right</span>
@@ -208,7 +211,7 @@ export default function DashboardHome({ role }) {
           <MetricCard icon="fitness_center" label="Clases asignadas" value={assignedClasses.length} detail="Semana actual" />
           <MetricCard icon="groups" label="Alumnos inscriptos" value={professorReservations.length} detail="Confirmados y espera" />
           <MetricCard icon="checklist" label="Asistencias registradas" value={reservations.filter(r => r.estado === RESERVA_ESTADOS.ASISTIDA).length} detail="Alumnos de tus clases" />
-          <MetricCard icon="monitoring" label="Ocupacion gimnasio" value={occupancy ? `${occupancy.total.porcentaje}%` : "..."} detail="Actualiza cada 10 segundos" />
+          <MetricCard icon="monitoring" label="Ocupación del gimnasio" value={occupancy ? `${occupancy.total.porcentaje}%` : "..."} detail="Actualiza cada 10 segundos" />
         </section>
         <section className="panel">
           <h3>Proximas clases</h3>
@@ -263,9 +266,9 @@ export default function DashboardHome({ role }) {
       />
       <section className="metric-grid">
         <MetricCard icon="calendar_month" label="Reservas confirmadas" value={confirmedToday} detail="Reservas confirmadas" />
-        <MetricCard icon="monitoring" label="Ocupacion actual" value={occupancy ? `${occupancy.total.porcentaje}%` : "..."} detail={occupancy?.total.estado} />
+        <MetricCard icon="monitoring" label="Ocupación actual" value={occupancy ? `${occupancy.total.porcentaje}%` : "..."} detail={occupancy?.total.estado} />
         <MetricCard icon="groups" label="Usuarios activos" value={activeUsers} detail={`${expiredUsers} membresias vencidas`} />
-        <MetricCard icon="star" label="Clase mas ocupada" value={topClass?.nombre || "-"} detail={topClass ? `${topClass.cuposOcupados}/${topClass.cupoTotal} cupos` : ""} />
+        <MetricCard icon="star" label="Clase más ocupada" value={topClass?.nombre || "-"} detail={topClass ? `${topClass.cuposOcupados}/${topClass.cupoTotal} cupos` : ""} />
       </section>
       <section className="panel">
         <h3>Semáforo de clases</h3>
