@@ -1,0 +1,11 @@
+**/node_modules
+**/.next
+**/out
+**/build
+**/.gradle
+**/.env
+**/.env.*
+!**/.env.example
+docs
+dist
+*.md
