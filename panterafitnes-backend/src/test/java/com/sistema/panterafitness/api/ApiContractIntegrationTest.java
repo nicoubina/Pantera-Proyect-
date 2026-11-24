@@ -137,7 +137,9 @@ class ApiContractIntegrationTest {
   @DisplayName("TC-06 Un CLIENTE no puede acceder a endpoints de administracion (403)")
   void clienteNoEsAdmin() throws Exception {
     String token = login("cliente@panterfitness.com");
-    mvc.perform(get("/api/usuarios").header("Authorization", token)).andExpect(status().isForbidden());
+    mvc.perform(get("/api/usuarios").header("Authorization", token))
+        .andExpect(status().isForbidden())
+        .andExpect(jsonPath("$.message").value("No tenes permisos para realizar esta accion."));
     mvc.perform(get("/api/estadisticas").header("Authorization", token))
         .andExpect(status().isForbidden());
   }

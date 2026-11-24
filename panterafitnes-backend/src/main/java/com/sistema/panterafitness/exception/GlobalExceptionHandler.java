@@ -42,10 +42,19 @@ public class GlobalExceptionHandler {
     return build(HttpStatus.UNAUTHORIZED, "Credenciales invalidas o token no valido.", request);
   }
 
-  @ExceptionHandler({ForbiddenException.class, AccessDeniedException.class})
+  @ExceptionHandler(ForbiddenException.class)
   @ResponseStatus(HttpStatus.FORBIDDEN)
-  public ErrorResponse handleForbidden(Exception exception, HttpServletRequest request) {
+  public ErrorResponse handleForbidden(ForbiddenException exception, HttpServletRequest request) {
     return build(HttpStatus.FORBIDDEN, exception.getMessage(), request);
+  }
+
+  /** Rol insuficiente (@PreAuthorize): mensaje propio en lugar del texto interno de Spring. */
+  @ExceptionHandler(AccessDeniedException.class)
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public ErrorResponse handleAccessDenied(
+      AccessDeniedException exception, HttpServletRequest request) {
+    return build(
+        HttpStatus.FORBIDDEN, "No tenes permisos para realizar esta accion.", request);
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
