@@ -13,8 +13,12 @@ public interface HorarioClaseRepository extends JpaRepository<HorarioClase, Long
   java.util.Optional<HorarioClase> findLockedById(
       @org.springframework.data.repository.query.Param("id") Long id);
 
-  java.util.Optional<HorarioClase> findFirstByClaseGimnasioIdAndDiaSemanaAndHoraInicioOrderByIdAsc(
-      Long claseId, com.sistema.panterafitness.enums.DiaSemana dia, java.time.LocalTime inicio);
+  java.util.Optional<HorarioClase>
+      findFirstByClaseGimnasioIdAndDiaSemanaAndHoraInicioAndFechaGreaterThanEqualOrderByFechaAsc(
+          Long claseId,
+          com.sistema.panterafitness.enums.DiaSemana dia,
+          java.time.LocalTime inicio,
+          LocalDate desde);
 
   List<HorarioClase> findByActivaTrueOrderByFechaAscHoraInicioAsc();
 
