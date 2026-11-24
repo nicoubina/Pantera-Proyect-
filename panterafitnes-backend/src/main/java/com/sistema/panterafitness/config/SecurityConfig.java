@@ -52,9 +52,12 @@ public class SecurityConfig {
 						auth.requestMatchers(PathRequest.toH2Console()).permitAll();
 					}
 					auth
-						.requestMatchers("/api/auth/**").permitAll()
+						.requestMatchers("/api/auth/**", "/api/health").permitAll()
 						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-						.anyRequest().authenticated();
+						// Toda la API exige JWT; los permisos por rol se validan en los services.
+						.requestMatchers("/api/**").authenticated()
+						// El resto son archivos estaticos del frontend (HTML/JS/CSS publicos).
+						.anyRequest().permitAll();
 				})
 				.authenticationProvider(authenticationProvider())
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -79,10 +82,24 @@ public class SecurityConfig {
 		return new BCryptPasswordEncoder();
 	}
 
+	/**
+	 * Origenes permitidos por CORS. Solo hacen falta si el frontend se sirve desde otro dominio
+	 * (por ejemplo, {@code npm run dev} en el puerto 3000); el despliegue unificado usa el mismo
+	 * origen. Se configuran con la variable CORS_ALLOWED_ORIGINS, separados por coma.
+	 */
+	private List<String> allowedOrigins() {
+		String configured = environment.getProperty(
+				"app.cors.allowed-origins", "http://localhost:3000,http://localhost:5173");
+		return java.util.Arrays.stream(configured.split(","))
+				.map(String::trim)
+				.filter(origin -> !origin.isEmpty())
+				.toList();
+	}
+
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173"));
+		configuration.setAllowedOrigins(allowedOrigins());
 		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(List.of("*"));
 		configuration.setAllowCredentials(true);

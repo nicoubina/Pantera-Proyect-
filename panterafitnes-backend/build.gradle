@@ -42,3 +42,17 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+// Empaquetado unificado: ./gradlew bootJar -PwithFrontend incluye el frontend ya compilado
+// (panterafitnes/out, generado con "npm run build") dentro del JAR como recursos estaticos.
+if (project.hasProperty('withFrontend')) {
+	processResources {
+		from('../panterafitnes/out') {
+			into 'static'
+		}
+	}
+}
+
+bootJar {
+	archiveFileName = 'pantera-fitness.jar'
+}
