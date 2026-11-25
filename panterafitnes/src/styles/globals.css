@@ -261,6 +261,42 @@ select:focus {
   font-weight: 950;
 }
 
+.brand-logo {
+  width: 56px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.header-logo {
+  display: none;
+  width: 44px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+@media (max-width: 819px) {
+  .header-logo {
+    display: block;
+  }
+}
+
+.auth-logo {
+  margin: 0 0 8px;
+  line-height: 0;
+}
+
+.auth-logo img {
+  width: min(190px, 52vw);
+  height: auto;
+}
+
 .brand-block strong,
 .brand-block small {
   display: block;
@@ -1186,6 +1222,10 @@ select:focus {
 
   .sidebar .brand-block {
     justify-content: center;
+  }
+
+  .sidebar .brand-logo {
+    width: 44px;
   }
 
   .app-shell {

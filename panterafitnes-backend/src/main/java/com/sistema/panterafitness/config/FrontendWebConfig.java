@@ -1,8 +1,10 @@
 package com.sistema.panterafitness.config;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
+import org.springframework.http.CacheControl;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.PathResourceResolver;
@@ -22,6 +24,16 @@ public class FrontendWebConfig implements WebMvcConfigurer {
 
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    // JS y CSS de Next llevan un hash en el nombre: nunca cambian, el navegador los guarda un año.
+    registry
+        .addResourceHandler("/_next/static/**")
+        .addResourceLocations("classpath:/static/_next/static/")
+        .setCacheControl(CacheControl.maxAge(365, TimeUnit.DAYS).cachePublic().immutable());
+    // Imágenes del sitio (logo, ícono): un día de caché.
+    registry
+        .addResourceHandler("/brand/**", "/favicon.ico", "/icon.png", "/apple-icon.png")
+        .addResourceLocations("classpath:/static/brand/", "classpath:/static/")
+        .setCacheControl(CacheControl.maxAge(1, TimeUnit.DAYS).cachePublic());
     registry
         .addResourceHandler("/**")
         .addResourceLocations("classpath:/static/")

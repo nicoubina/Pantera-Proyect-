@@ -10,6 +10,7 @@ import { useAuth } from "@/context/AuthContext";
 import { modulesService } from "@/services/modulesService";
 
 const AppDataContext = createContext(null);
+const POLL_MS = 20000;
 const emptyData = { classes: [], reservations: [], occupancy: null, notifications: [], users: [], catalog: [], alerts: [] };
 
 export function AppDataProvider({ children }) {
@@ -29,15 +30,17 @@ export function AppDataProvider({ children }) {
     const session = generation.current;
     const version = ++requestVersion.current;
     try {
-      const [occupancy, classOccupancies, reservations, notifications, catalog, users, alerts] = await Promise.all([
+      // Todo en paralelo: con la base lejos, cada ida y vuelta en serie suma tiempo de espera.
+      const [occupancy, classOccupancies, weekly, reservations, notifications, catalog, users, alerts] = await Promise.all([
         occupancyService.getCurrentOccupancy(), occupancyService.getClassesOccupancy(),
+        classService.getWeeklyClassSchedules(),
         reservationService.getReservations(user.rol), notificationService.getByUser(),
         classService.getClasses(),
         user.rol === "ADMINISTRADOR" ? userService.getAllUsers() : Promise.resolve([]),
         modulesService.list("alertas")
       ]);
       if (session !== generation.current || version !== requestVersion.current) return;
-      const classes = await classService.getWeeklyClasses(classOccupancies);
+      const classes = await classService.getWeeklyClasses(classOccupancies, weekly);
       if (session !== generation.current || version !== requestVersion.current) return;
       setData({ classes, reservations, occupancy, notifications, catalog, users, alerts });
       setLoadError("");
@@ -60,13 +63,23 @@ export function AppDataProvider({ children }) {
     if (!user) return;
     let stopped = false;
     let timer;
+    // Actualiza cada 20 s solo con la pestaña visible, y al instante cuando el usuario vuelve a ella.
     async function poll() {
-      if (!actionLock.current) await refresh();
-      if (!stopped) timer = window.setTimeout(poll, 10000);
+      if (!actionLock.current && document.visibilityState === "visible") await refresh();
+      if (!stopped) timer = window.setTimeout(poll, POLL_MS);
+    }
+    function onVisible() {
+      if (document.visibilityState !== "visible" || actionLock.current) return;
+      window.clearTimeout(timer);
+      poll();
     }
     poll();
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", onVisible);
     return () => {
       stopped = true;
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", onVisible);
       generation.current += 1;
       window.clearTimeout(timer);
     };

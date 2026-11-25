@@ -50,7 +50,7 @@ export default function AppLayout({ children }) {
     <div className="app-shell">
       <aside className="sidebar">
         <div className="brand-block">
-          <span className="brand-mark">PF</span>
+          <img className="brand-logo" src="/brand/pantera.png" alt="" width="256" height="166" />
           <div className="brand-text">
             <strong>Pantera Fitness</strong>
           </div>
@@ -84,9 +84,12 @@ export default function AppLayout({ children }) {
 
       <div className="content-shell">
         <header className={`top-header ${scrolled ? "header-scrolled" : ""}`}>
-          <div>
+          <div className="header-title">
+            <img className="header-logo" src="/brand/pantera.png" alt="" width="256" height="166" />
+            <div>
             <p className="eyebrow">Pantera Fitness</p>
             <h2 className="font-display page-title">{pathLabels[pathname] || getRoleLabel(user.rol)}</h2>
+            </div>
           </div>
           <div className="header-actions">
             <div className="live-occ-shell" ref={occRef}>
