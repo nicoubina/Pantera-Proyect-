@@ -172,7 +172,7 @@ public class DataInitializer implements CommandLineRunner {
             .fechaInicioMembresia(inicio)
             .fechaVencimientoMembresia(vencimiento)
             .activo(true)
-            .qrSimulado(qr)
+            .codigoQr(qr)
             .build());
   }
 

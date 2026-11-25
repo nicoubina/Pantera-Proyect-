@@ -47,7 +47,7 @@ public class AuthService {
 				.fechaInicioMembresia(hoy)
 				.fechaVencimientoMembresia(hoy.plusMonths(1))
 				.activo(true)
-				.qrSimulado(generarQr())
+				.codigoQr(generarQr())
 				.build();
 
 		Usuario guardado = usuarioRepository.save(usuario);

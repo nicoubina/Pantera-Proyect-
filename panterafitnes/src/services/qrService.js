@@ -1,9 +1,10 @@
 import { apiRequest } from "./apiClient";
 
 export const qrService = {
-  simulateCheckIn({ qrSimulado, horarioClaseId, horaIngresoSimulada }) {
-    return apiRequest("/api/qr/simular-ingreso", {
-      method: "POST", body: { qrSimulado, horarioClaseId, horaIngresoSimulada }
+  /** Recepción o el profesor registran el ingreso del socio con el código leído de su QR. */
+  registerEntry({ codigo, horarioClaseId }) {
+    return apiRequest("/api/qr/ingreso", {
+      method: "POST", body: { codigo, horarioClaseId: horarioClaseId ?? null }
     });
   }
 };

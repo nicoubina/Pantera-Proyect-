@@ -3,6 +3,7 @@ package com.sistema.panterafitness.entity;
 import com.sistema.panterafitness.enums.EstadoAsistencia;
 import com.sistema.panterafitness.enums.MetodoRegistro;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -64,14 +65,14 @@ public class Asistencia {
   @Column(nullable = false)
   private EstadoAsistencia estadoAsistencia;
 
-  @Enumerated(EnumType.STRING)
+  @Convert(converter = MetodoRegistroConverter.class)
   @Column(nullable = false)
   private MetodoRegistro metodoRegistro;
 
   @PrePersist
   void prePersist() {
     if (metodoRegistro == null) {
-      metodoRegistro = MetodoRegistro.QR_SIMULADO;
+      metodoRegistro = MetodoRegistro.QR;
     }
     if (estadoAsistencia == null) {
       estadoAsistencia = EstadoAsistencia.PENDIENTE;

@@ -43,7 +43,7 @@ class CompleteModulesIntegrationTest {
   @Autowired AsistenciaCierreService cierre;
   @Autowired PenalizacionService penalizacionService;
   @Autowired RutinaService rutinaService;
-  @Autowired QrSimuladoService qr;
+  @Autowired QrIngresoService qr;
   @Autowired AlertaService alertaService;
   @Autowired ModulesDataInitializer initializer;
   @Autowired JwtService jwt;
@@ -76,7 +76,7 @@ class CompleteModulesIntegrationTest {
             .fechaInicioMembresia(LocalDate.now().minusDays(1))
             .fechaVencimientoMembresia(LocalDate.now().plusMonths(6))
             .activo(true)
-            .qrSimulado("PF-" + UUID.randomUUID())
+            .codigoQr("PF-" + UUID.randomUUID())
             .build());
   }
 
@@ -122,34 +122,91 @@ class CompleteModulesIntegrationTest {
   }
 
   @Test
-  void pendingAttendanceQrAndCancellationShareOneRecord() {
+  void pendingAttendanceAndCancellationShareOneRecord() {
     var h = futuro(2);
     var r = reservaService.crearReserva(new CrearReservaRequest(h.getId()));
     assertThat(asistencias.findByReservaId(r.id()).orElseThrow().getEstadoAsistencia())
         .isEqualTo(EstadoAsistencia.PENDIENTE);
-    qr.simularIngreso(
-        new QrSimuladoRequest(
-            cliente.getQrSimulado(), h.getId(), h.getFecha().atTime(h.getHoraInicio())));
-    assertThat(asistencias.findByReservaId(r.id()).orElseThrow().getEstadoAsistencia())
-        .isEqualTo(EstadoAsistencia.ASISTIDA);
-    assertThat(
-            asistencias.findAll().stream()
-                .filter(a -> a.getReserva() != null && a.getReserva().getId().equals(r.id()))
-                .count())
-        .isEqualTo(1);
-    assertThatThrownBy(
-            () ->
-                qr.simularIngreso(
-                    new QrSimuladoRequest(
-                        cliente.getQrSimulado(),
-                        h.getId(),
-                        h.getFecha().atTime(h.getHoraInicio()))))
-        .isInstanceOf(BusinessException.class);
     var otro = horario(LocalDate.now().plusDays(4).atTime(12, 0), 2);
     var cancelable = reservaService.crearReserva(new CrearReservaRequest(otro.getId()));
     reservaService.cancelar(cancelable.id());
     assertThat(asistencias.findByReservaId(cancelable.id()).orElseThrow().getEstadoAsistencia())
         .isEqualTo(EstadoAsistencia.CANCELADA);
+  }
+
+  /** Clase que empieza {@code minutos} desde ahora (negativo: ya empezo), sin cruzar medianoche. */
+  HorarioClase claseDeAhora(int minutos) {
+    LocalDateTime inicio = LocalDateTime.now().withSecond(0).withNano(0).plusMinutes(minutos);
+    Assumptions.assumeTrue(
+        inicio.toLocalDate().equals(inicio.plusMinutes(45).toLocalDate())
+            && inicio.toLocalDate().equals(LocalDate.now()),
+        "la clase de prueba cruzaria la medianoche");
+    return horario(inicio, 5);
+  }
+
+  @Test
+  void adminScansClientQrAndAttendanceUsesServerTime() {
+    var h = claseDeAhora(5);
+    var r = confirmar(cliente, h);
+    autenticar(usuarios.findByEmail("admin@panterfitness.com").orElseThrow());
+    var antes = LocalDateTime.now().minusSeconds(1);
+    var resp = qr.registrarIngreso(new QrIngresoRequest(" " + cliente.getCodigoQr() + " ", null));
+    assertThat(resp.estadoAsistencia()).isEqualTo(EstadoAsistencia.ASISTIDA);
+    assertThat(resp.horaIngreso()).isAfterOrEqualTo(antes);
+    var a = asistencias.findByReservaId(r.getId()).orElseThrow();
+    assertThat(a.getMetodoRegistro()).isEqualTo(MetodoRegistro.QR);
+    assertThat(reservas.findById(r.getId()).orElseThrow().getEstadoReserva())
+        .isEqualTo(EstadoReserva.ASISTIDA);
+    assertThat(asistencias.findAll().stream().filter(x -> x.getReserva() != null && x.getReserva().getId().equals(r.getId())).count())
+        .isEqualTo(1);
+    assertThatThrownBy(() -> qr.registrarIngreso(new QrIngresoRequest(cliente.getCodigoQr(), h.getId())))
+        .isInstanceOf(BusinessException.class);
+  }
+
+  @Test
+  void qrScanMoreThanTenMinutesLateIsAbsent() {
+    var h = claseDeAhora(-15);
+    confirmar(cliente, h);
+    autenticar(usuarios.findByEmail("admin@panterfitness.com").orElseThrow());
+    assertThat(qr.registrarIngreso(new QrIngresoRequest(cliente.getCodigoQr(), null)).estadoAsistencia())
+        .isEqualTo(EstadoAsistencia.AUSENTE);
+  }
+
+  @Test
+  void qrScanIsRejectedForUnknownCodeExpiredMembershipOrClassFarAway() {
+    autenticar(usuarios.findByEmail("admin@panterfitness.com").orElseThrow());
+    assertThatThrownBy(() -> qr.registrarIngreso(new QrIngresoRequest("PF-no-existe", null)))
+        .isInstanceOf(BusinessException.class)
+        .hasMessageContaining("ningún socio");
+    confirmar(cliente, futuro(2));
+    assertThatThrownBy(() -> qr.registrarIngreso(new QrIngresoRequest(cliente.getCodigoQr(), null)))
+        .isInstanceOf(BusinessException.class)
+        .hasMessageContaining("no tiene una reserva confirmada");
+    cliente.setFechaVencimientoMembresia(LocalDate.now().minusDays(1));
+    usuarios.saveAndFlush(cliente);
+    assertThatThrownBy(() -> qr.registrarIngreso(new QrIngresoRequest(cliente.getCodigoQr(), null)))
+        .isInstanceOf(BusinessException.class)
+        .hasMessageContaining("membresía");
+  }
+
+  @Test
+  void professorCanOnlyScanForOwnClassesAndClientCannotSelfCheckIn() throws Exception {
+    var h = claseDeAhora(5);
+    confirmar(cliente, h);
+    Usuario otroProfesor = usuario(Rol.PROFESOR);
+    autenticar(otroProfesor);
+    assertThatThrownBy(() -> qr.registrarIngreso(new QrIngresoRequest(cliente.getCodigoQr(), h.getId())))
+        .isInstanceOf(ForbiddenException.class);
+    SecurityContextHolder.clearContext();
+    mvc.perform(
+            post("/api/qr/ingreso")
+                .header("Authorization", "Bearer " + jwt.generateToken(cliente))
+                .contentType("application/json")
+                .content("{\"codigo\":\"" + cliente.getCodigoQr() + "\"}"))
+        .andExpect(status().isForbidden());
+    autenticar(h.getClaseGimnasio().getProfesor());
+    assertThat(qr.registrarIngreso(new QrIngresoRequest(cliente.getCodigoQr(), null)).estadoAsistencia())
+        .isEqualTo(EstadoAsistencia.ASISTIDA);
   }
 
   @Test

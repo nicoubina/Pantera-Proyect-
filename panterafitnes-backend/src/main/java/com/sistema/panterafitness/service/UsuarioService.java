@@ -38,7 +38,7 @@ public class UsuarioService {
         id == null
             ? Usuario.builder()
                 .estadoMembresia(com.sistema.panterafitness.enums.EstadoMembresia.PENDIENTE)
-                .qrSimulado("PF-" + java.util.UUID.randomUUID())
+                .codigoQr("PF-" + java.util.UUID.randomUUID())
                 .build()
             : usuarioRepository
                 .findById(id)
@@ -88,7 +88,7 @@ public class UsuarioService {
         r.fechaInicioMembresia(),
         r.fechaVencimientoMembresia(),
         r.activo(),
-        r.qrSimulado(),
+        r.codigoQr(),
         r.fechaCreacion());
   }
 

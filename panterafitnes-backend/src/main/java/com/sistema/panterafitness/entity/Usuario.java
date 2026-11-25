@@ -64,8 +64,9 @@ public class Usuario implements UserDetails {
 	@Column(nullable = false)
 	private Boolean activo;
 
-	@Column(nullable = false, unique = true)
-	private String qrSimulado;
+	/** Codigo que contiene el QR personal del usuario (columna historica qr_simulado). */
+	@Column(name = "qr_simulado", nullable = false, unique = true)
+	private String codigoQr;
 
 	@Column(nullable = false, updatable = false)
 	private LocalDateTime fechaCreacion;

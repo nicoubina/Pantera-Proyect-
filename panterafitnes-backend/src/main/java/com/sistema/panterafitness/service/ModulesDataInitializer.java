@@ -158,7 +158,7 @@ public class ModulesDataInitializer implements CommandLineRunner {
                               .fechaInicioMembresia(LocalDate.now().minusDays(10))
                               .fechaVencimientoMembresia(LocalDate.now().plusMonths(1))
                               .activo(true)
-                              .qrSimulado("PF-" + java.util.UUID.randomUUID())
+                              .codigoQr("PF-" + java.util.UUID.randomUUID())
                               .build()));
       penalizaciones.save(
           Penalizacion.builder()

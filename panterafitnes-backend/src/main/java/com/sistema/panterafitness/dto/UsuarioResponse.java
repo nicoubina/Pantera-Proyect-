@@ -15,7 +15,7 @@ public record UsuarioResponse(
 		LocalDate fechaInicioMembresia,
 		LocalDate fechaVencimientoMembresia,
 		Boolean activo,
-		String qrSimulado,
+		String codigoQr,
 		LocalDateTime fechaCreacion
 ) {
 }

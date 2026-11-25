@@ -66,7 +66,7 @@ class AuthServiceTest {
     assertThat(u.getEstadoMembresia()).isEqualTo(EstadoMembresia.ACTIVA);
     assertThat(u.getPassword()).isNotEqualTo("123456").startsWith("$2");
     assertThat(bcrypt.matches("123456", u.getPassword())).isTrue();
-    assertThat(u.getQrSimulado()).startsWith("PF-");
+    assertThat(u.getCodigoQr()).startsWith("PF-");
     assertThat(respuesta.token()).isEqualTo("token");
   }
 }

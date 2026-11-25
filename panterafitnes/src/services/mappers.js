@@ -4,7 +4,7 @@ const minutes = (time) => Number(time.slice(0, 2)) * 60 + Number(time.slice(3, 5
 export function mapUser(dto) {
   return {
     id: dto.id, nombre: fullName(dto), email: dto.email, rol: dto.rol,
-    membresia: dto.estadoMembresia, activo: dto.activo, qrSimulado: dto.qrSimulado,
+    membresia: dto.estadoMembresia, activo: dto.activo, codigoQr: dto.codigoQr,
     fechaInicioMembresia: dto.fechaInicioMembresia,
     fechaVencimientoMembresia: dto.fechaVencimientoMembresia
   };

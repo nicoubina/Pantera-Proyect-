@@ -28,7 +28,7 @@ public final class EntityMapper {
 				usuario.getFechaInicioMembresia(),
 				usuario.getFechaVencimientoMembresia(),
 				usuario.getActivo(),
-				usuario.getQrSimulado(),
+				usuario.getCodigoQr(),
 				usuario.getFechaCreacion()
 		);
 	}

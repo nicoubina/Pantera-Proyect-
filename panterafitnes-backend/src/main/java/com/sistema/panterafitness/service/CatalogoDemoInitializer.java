@@ -91,7 +91,7 @@ public class CatalogoDemoInitializer implements CommandLineRunner {
                         .fechaInicioMembresia(LocalDate.now().minusMonths(1))
                         .fechaVencimientoMembresia(LocalDate.now().plusYears(1))
                         .activo(true)
-                        .qrSimulado("QR-PROFESORA-DEMO")
+                        .codigoQr("QR-PROFESORA-DEMO")
                         .build()));
   }
 
