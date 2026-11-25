@@ -764,48 +764,89 @@ select:focus {
 }
 
 .qr-panel {
-  grid-template-columns: 180px 1fr;
-  align-items: center;
+  grid-template-columns: 240px 1fr;
+  align-items: start;
 }
 
-.qr-visual {
+.qr-image-box {
+  display: flex;
+  justify-content: center;
+}
+
+.qr-image {
+  display: block;
+  width: 232px;
+  height: 232px;
+  border-radius: 10px;
+  background: #ffffff;
+  image-rendering: pixelated;
+}
+
+.qr-image.placeholder {
+  background: var(--color-bg);
+  border: 1px dashed var(--color-border);
+}
+
+.qr-code-text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.78rem;
+  word-break: break-all;
+  margin: 4px 0 8px;
+}
+
+.scanner-panel {
+  grid-template-columns: minmax(260px, 420px) 1fr;
+  align-items: start;
+}
+
+.scanner-view {
   position: relative;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: #050505;
+}
+
+.scanner-video {
+  display: none;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scanner-video.on { display: block; }
+
+.scanner-placeholder {
+  position: absolute;
+  inset: 0;
   display: grid;
-  width: 172px;
-  height: 172px;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 5px;
-  border: 10px solid #f5f5f5;
-  border-radius: 8px;
-  background: #f5f5f5;
+  place-content: center;
+  justify-items: center;
+  gap: 8px;
+  color: var(--color-muted);
 }
 
-.qr-visual span {
-  border-radius: 2px;
-  background: #f5f5f5;
-}
-
-.qr-visual span.filled {
-  background: #101010;
-}
-
-/* QR finder patterns (corner squares) */
-.qr-finder {
+.scanner-frame {
   position: absolute;
-  width: 34px;
-  height: 34px;
-  border: 8px solid #101010;
-  background: #f5f5f5;
+  inset: 18%;
+  border: 3px solid var(--color-orange);
+  border-radius: 12px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.35);
 }
-.qr-finder::after {
-  content: '';
-  position: absolute;
-  inset: 7px;
-  background: #101010;
+
+.manual-code label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.82rem;
+  color: var(--color-muted);
 }
-.qr-finder.top-left { top: 6px; left: 6px; }
-.qr-finder.top-right { top: 6px; right: 6px; }
-.qr-finder.bottom-left { bottom: 6px; left: 6px; }
+
+.manual-code input {
+  flex: 1;
+  min-width: 0;
+}
 
 /* Access card styling for QR holder info */
 .access-card {
@@ -1057,12 +1098,9 @@ select:focus {
     width: 100%;
   }
 
-  .qr-panel {
+  .qr-panel,
+  .scanner-panel {
     grid-template-columns: 1fr;
-  }
-
-  .qr-visual {
-    justify-self: center;
   }
 
   .bottom-nav {
@@ -1286,7 +1324,7 @@ select:focus {
   50% { opacity: 0.4; }
 }
 
-/* Inline result banner (QR simulator) */
+/* Inline result banner (QR) */
 .result-banner {
   display: none;
   padding: 14px;

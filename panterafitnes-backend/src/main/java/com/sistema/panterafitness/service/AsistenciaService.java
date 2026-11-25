@@ -62,7 +62,7 @@ public class AsistenciaService {
         .atTime(reserva.getHorarioClase().getHoraInicio())
         .isAfter(LocalDateTime.now()))
       throw new BusinessException(
-          "La clase todavia no comenzo. Usa el QR para simular el ingreso.");
+          "La clase todavía no comenzó: el ingreso se registra escaneando el QR del socio.");
     return dto(
         registrarReserva(
             reserva, r.estadoAsistencia(), LocalDateTime.now(), MetodoRegistro.MANUAL));

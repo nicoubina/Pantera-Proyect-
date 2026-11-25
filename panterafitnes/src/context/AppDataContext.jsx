@@ -5,7 +5,6 @@ import { classService } from "@/services/classService";
 import { notificationService } from "@/services/notificationService";
 import { occupancyService } from "@/services/occupancyService";
 import { reservationService } from "@/services/reservationService";
-import { qrService } from "@/services/qrService";
 import { userService } from "@/services/userService";
 import { useAuth } from "@/context/AuthContext";
 import { modulesService } from "@/services/modulesService";
@@ -109,27 +108,12 @@ export function AppDataProvider({ children }) {
         : "Reserva confirmada.");
   }
 
-  function simulateQr(reservationId, mode = "ASISTIDA") {
-    const reservation = data.reservations.find((item) => item.id === reservationId);
-    if (!reservation) { showFeedback("Seleccioná una reserva confirmada.", "ERROR"); return Promise.resolve(null); }
-    const schedule = reservation.classItem;
-    // Both buttons explicitly simulate a local class time; the API determines attendance.
-    const time = new Date(`${schedule.fecha}T${schedule.hora}:00`);
-    if (mode === "AUSENTE") time.setMinutes(time.getMinutes() + 11);
-    const pad = (value) => String(value).padStart(2, "0");
-    const simulatedTime = `${time.getFullYear()}-${pad(time.getMonth() + 1)}-${pad(time.getDate())}T${pad(time.getHours())}:${pad(time.getMinutes())}:00`;
-    return runAction(() => qrService.simulateCheckIn({
-      qrSimulado: user.qrSimulado, horarioClaseId: reservation.classId, horaIngresoSimulada: simulatedTime
-    }), (result) => result.mensaje);
-  }
-
   // Do not expose the previous account's data during a role/session switch.
   const visible = owner.current === user?.id ? data : emptyData;
   const value = {
     ...visible, loading, loadError, pending, feedback, setFeedback, refresh,
     reserveClass, joinWaitList: reserveClass,
     cancelReservation: (id) => runAction(() => reservationService.cancelReservation(id), (result) => result.mensaje),
-    simulateQr,
     markAllNotificationsAsRead: () => runAction(async () => {
       await notificationService.markAllAsRead(data.notifications);
       return true;

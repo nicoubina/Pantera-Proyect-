@@ -3,7 +3,7 @@
 import PageHeader from "@/components/common/PageHeader";
 import StatusPill from "@/components/common/StatusPill";
 import NotificationsList from "@/components/notificaciones/NotificationsList";
-import QrSimulator from "@/components/qr/QrSimulator";
+import MyQrCard from "@/components/qr/MyQrCard";
 import { getRoleLabel } from "@/components/layout/navigation";
 import { ROLES } from "@/data/constants";
 import { useAppData } from "@/context/AppDataContext";
@@ -92,7 +92,7 @@ export default function ProfileView() {
             </div>
           ) : null}
         </article>
-        {user.rol === ROLES.CLIENTE && <QrSimulator />}
+        {user.rol === ROLES.CLIENTE && <MyQrCard compact />}
       </section>
 
       <section className="panel">

@@ -179,7 +179,7 @@ export default function DashboardHome({ role }) {
               qr_code
             </span>
             <span style={{ flex: 1 }}>
-              <strong style={{ display: "block" }}>Ver QR simulado</strong>
+              <strong style={{ display: "block" }}>Ver mi QR</strong>
               <span className="muted" style={{ fontSize: "0.85rem" }}>
                 Tu credencial de acceso al gimnasio
               </span>

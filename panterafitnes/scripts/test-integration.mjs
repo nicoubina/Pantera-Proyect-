@@ -54,7 +54,7 @@ const demoUser = await authService.register({
   nombre: "Prueba", apellido: "Integración", email: "integracion-" + Date.now() + "@example.test", password: "123456"
 });
 assert.equal(demoUser.rol, "CLIENTE");
-assert.ok(demoUser.qrSimulado);
+assert.ok(demoUser.codigoQr);
 await assert.rejects(() => userService.getAllUsers(), (error) => error.status === 403);
 assert.ok(authService.hasSession(), "403 must not clear the client session");
 
@@ -85,33 +85,18 @@ assert.ok(waiting.posicionListaEspera >= 2);
 await reservationService.cancelReservation(waiting.id);
 console.log("PASS reserve, duplicate, cancellation, occupancy and backend waitlist position");
 
-const beforeQr = await occupancyService.getCurrentOccupancy();
 reservation = await reservationService.createReservation(available[0].id);
-const qr = await qrService.simulateCheckIn({
-  qrSimulado: demoUser.qrSimulado, horarioClaseId: reservation.classId,
-  horaIngresoSimulada: available[0].fecha + "T" + available[0].hora + ":00"
-});
-assert.equal(qr.estadoAsistencia, "ASISTIDA");
-assert.equal((await occupancyService.getCurrentOccupancy()).total.personas, beforeQr.total.personas + 1);
-await assert.rejects(() => qrService.simulateCheckIn({
-  qrSimulado: demoUser.qrSimulado, horarioClaseId: reservation.classId
-}), /CONFIRMADA/i);
-const second = available[1];
-await reservationService.createReservation(second.id);
-const late = new Date(second.fecha + "T" + second.hora + ":00");
-late.setMinutes(late.getMinutes() + 11);
-const pad = (n) => String(n).padStart(2, "0");
-const lateResult = await qrService.simulateCheckIn({
-  qrSimulado: demoUser.qrSimulado, horarioClaseId: second.id,
-  horaIngresoSimulada: late.getFullYear() + "-" + pad(late.getMonth() + 1) + "-" + pad(late.getDate()) +
-    "T" + pad(late.getHours()) + ":" + pad(late.getMinutes()) + ":00"
-});
-assert.equal(lateResult.estadoAsistencia, "AUSENTE");
+// El socio no puede registrar su propio ingreso: el QR lo escanea recepción o el profesor.
+await assert.rejects(() => qrService.registerEntry({ codigo: demoUser.codigoQr }), (error) => error.status === 403);
 const notifications = await notificationService.getByUser();
-assert.ok(notifications.some((item) => item.tipo === "QR"));
+assert.ok(notifications.length);
 await notificationService.markAllAsRead(notifications);
 assert.ok((await notificationService.getByUser()).every((item) => item.leida));
-console.log("PASS QR attendance/late/rejection and notification persistence");
+await authService.login("admin@panterfitness.com", "123456");
+await assert.rejects(() => qrService.registerEntry({ codigo: "PF-no-existe" }), /ningún socio/i);
+// La reserva es para dentro de más de 24 h: con la hora real del servidor no corresponde ingresar.
+await assert.rejects(() => qrService.registerEntry({ codigo: demoUser.codigoQr }), /reserva confirmada/i);
+console.log("PASS QR check-in only by staff, real server time and notifications");
 
 await authService.login("admin@panterfitness.com", "123456");
 assert.ok((await userService.getAllUsers()).some((item) => item.id === demoUser.id));
@@ -137,6 +122,7 @@ const newClient = await modulesService.save("usuarios", null, {
   nombre: "Manual", apellido: "Integración", email: `modules-${unique}@example.test`,
   password: "123456", rol: "CLIENTE", activo: true
 });
+const pad = (n) => String(n).padStart(2, "0");
 const dayKey = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 const today = dayKey(new Date());
 const futureDate = dayKey(new Date(Date.now() + 3 * 86400000));

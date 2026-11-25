@@ -12,7 +12,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
   Optional<Usuario> findByEmail(String email);
 
-  Optional<Usuario> findByQrSimulado(String qrSimulado);
+  Optional<Usuario> findByCodigoQr(String codigoQr);
 
   boolean existsByEmail(String email);
 }

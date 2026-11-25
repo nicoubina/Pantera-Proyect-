@@ -27,10 +27,10 @@ export function getNavigationItems(role) {
     { label: reservationsLabel, href: `${basePath}/reservas`, icon: "event_available" },
   ];
   const modules = role === ROLES.ADMINISTRADOR
-    ? [["Usuarios", "usuarios", "group"], ["Profesores", "profesores", "sports"], ["Horarios", "horarios", "schedule"], ["Asistencias", "asistencias", "checklist"], ["Lista de espera", "lista-espera", "hourglass_empty"], ["Membresías", "membresias", "badge"], ["Penalizaciones", "penalizaciones", "gavel"], ["Rutinas", "rutinas", "exercise"], ["Alertas", "alertas", "warning"]]
+    ? [["Escanear QR", "ingreso", "qr_code_scanner"], ["Usuarios", "usuarios", "group"], ["Profesores", "profesores", "sports"], ["Horarios", "horarios", "schedule"], ["Asistencias", "asistencias", "checklist"], ["Lista de espera", "lista-espera", "hourglass_empty"], ["Membresías", "membresias", "badge"], ["Penalizaciones", "penalizaciones", "gavel"], ["Rutinas", "rutinas", "exercise"], ["Alertas", "alertas", "warning"]]
     : role === ROLES.CLIENTE
       ? [["Asistencias", "asistencias", "checklist"], ["Lista de espera", "lista-espera", "hourglass_empty"], ["Membresía", "membresia", "badge"], ["Penalizaciones", "penalizaciones", "gavel"], ["Mis rutinas", "rutinas", "exercise"], ["Mi QR", "qr", "qr_code"]]
-      : [["Asistencias", "asistencias", "checklist"], ["Lista de espera", "lista-espera", "hourglass_empty"], ["Rutinas", "rutinas", "exercise"]];
+      : [["Escanear QR", "ingreso", "qr_code_scanner"], ["Asistencias", "asistencias", "checklist"], ["Lista de espera", "lista-espera", "hourglass_empty"], ["Rutinas", "rutinas", "exercise"]];
   return [...items, ...modules.map(([label, path, icon]) => ({ label, href: `${basePath}/${path}`, icon })),
     { label: "Notificaciones", href: `${basePath}/notificaciones`, icon: "notifications" },
     { label: "Perfil", href: `${basePath}/perfil`, icon: "person" }];

@@ -59,7 +59,7 @@ export default function AttendanceView() {
             <p>{fullName(a.usuario)}</p>
             <p className="muted">
               Ingreso: {a.horaIngreso?.replace("T", " ") || "Sin ingreso"} ·{" "}
-              {a.metodoRegistro}
+              {{ QR: "QR", MANUAL: "Manual", AUTOMATICO: "Cierre automático" }[a.metodoRegistro] || a.metodoRegistro}
             </p>
           </div>
           <State value={a.estadoAsistencia} />

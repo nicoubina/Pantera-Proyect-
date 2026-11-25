@@ -1,6 +1,6 @@
 # Pantera Fitness
 
-Sistema web para la gestión de un gimnasio: clases y horarios, reservas con cupo y lista de espera, membresías, asistencias con QR simulado, penalizaciones por inasistencias, rutinas de entrenamiento, alertas, notificaciones internas y ocupación del gimnasio en tiempo real. Tiene tres tipos de usuario: **cliente**, **profesor** y **administrador**.
+Sistema web para la gestión de un gimnasio: clases y horarios, reservas con cupo y lista de espera, membresías, control de acceso con QR (el cliente muestra su QR y recepción o el profesor lo escanean con la cámara), penalizaciones por inasistencias, rutinas de entrenamiento, alertas, notificaciones internas y ocupación del gimnasio en tiempo real. Tiene tres tipos de usuario: **cliente**, **profesor** y **administrador**.
 
 ## Cómo probarlo (sin instalar nada)
 
@@ -24,6 +24,14 @@ Todos usan la contraseña **123456**.
 | `admin@panterfitness.com` | Administrador | Gestión completa: usuarios, clases, horarios, membresías, penalizaciones, alertas, métricas |
 
 Los datos iniciales (seeds) se generan con las fechas del día: la agenda semanal de clases se renueva sola, así que siempre hay clases para reservar.
+
+### Ingreso con QR
+
+1. El cliente reserva una clase y abre **Mi QR** en el celular: es un código QR real con su código personal.
+2. En la entrada, recepción (administrador) o el profesor abren **Escanear QR**, activan la cámara y apuntan al QR. También se puede escribir el código o usar un lector USB.
+3. El sistema busca la reserva confirmada de ese socio para la clase de ese horario y registra la asistencia con la **hora del servidor**: desde 30 minutos antes del inicio; más de 10 minutos tarde queda como ausente. La pantalla del cliente se actualiza sola.
+
+La cámara del navegador necesita HTTPS (la web publicada lo tiene) o `localhost`.
 
 ## Documentación
 
