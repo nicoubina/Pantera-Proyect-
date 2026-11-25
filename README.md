@@ -6,7 +6,7 @@ Sistema web para la gestión de un gimnasio: clases y horarios, reservas con cup
 
 | Opción | Cómo se abre | Base de datos |
 |---|---|---|
-| **A. Web publicada** | Abrir la URL pública del servicio en Render (se informa en la entrega). La primera carga puede tardar hasta 1 minuto porque el plan gratuito "duerme" el servidor cuando no se usa. | PostgreSQL en Supabase (datos persistentes) |
+| **A. Web publicada** | Abrir **https://pantera-fitness.onrender.com**. La primera carga puede tardar hasta 1 minuto porque el plan gratuito "duerme" el servidor cuando no se usa. | PostgreSQL en Supabase (datos persistentes) |
 | **B. Ejecutable para Windows** | Descomprimir `PanteraFitness-Windows.zip` y hacer doble clic en **Iniciar Pantera Fitness.bat**. Incluye su propio Java: no requiere instalaciones. Se abre solo en `http://localhost:8090`. | H2 en memoria, con datos demo frescos en cada inicio |
 
 ### Usuarios de prueba
