@@ -54,14 +54,8 @@ export default function LoginForm() {
             marginBottom: 32
           }}
         >
-          <div
-            className="brand-mark"
-            style={{ marginBottom: 20, boxShadow: "0 0 20px rgba(255,122,26,0.3)" }}
-          >
-            PF
-          </div>
-          <h1 className="font-display" style={{ fontSize: "2rem", marginBottom: 8 }}>
-            Pantera Fitness
+          <h1 className="auth-logo">
+            <img src="/brand/logo.png" alt="Pantera Fitness" width="325" height="300" fetchPriority="high" />
           </h1>
           <p className="muted">Entrená con propósito</p>
         </header>

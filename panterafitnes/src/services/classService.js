@@ -64,8 +64,9 @@ export const classService = {
   getClasses() { return apiRequest("/api/clases"); },
   getSchedules() { return apiRequest("/api/horarios"); },
   getWeeklySchedules() { return apiRequest("/api/horarios/semana"); },
-  async getWeeklyClasses(occupancies = []) {
-    const schedules = await apiRequest("/api/clases/semana");
+  getWeeklyClassSchedules() { return apiRequest("/api/clases/semana"); },
+  async getWeeklyClasses(occupancies = [], preloaded = null) {
+    const schedules = preloaded || await apiRequest("/api/clases/semana");
     return Promise.all(schedules.map(async (dto) => {
       const occupancy = occupancies.find((item) => item.horarioId === dto.id)
         || await apiRequest(`/api/ocupacion/clases/${dto.id}`);

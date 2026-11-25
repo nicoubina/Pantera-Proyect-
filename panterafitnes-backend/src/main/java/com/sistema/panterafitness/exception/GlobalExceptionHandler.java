@@ -22,6 +22,12 @@ public class GlobalExceptionHandler {
     return build(HttpStatus.NOT_FOUND, exception.getMessage(), request);
   }
 
+  @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public ErrorResponse handleNoRoute(Exception exception, HttpServletRequest request) {
+    return build(HttpStatus.NOT_FOUND, "Recurso no encontrado.", request);
+  }
+
   @ExceptionHandler(BusinessException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ErrorResponse handleBusiness(BusinessException exception, HttpServletRequest request) {

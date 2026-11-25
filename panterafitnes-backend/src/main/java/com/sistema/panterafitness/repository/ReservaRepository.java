@@ -40,6 +40,18 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
   long countByHorarioClaseIdAndEstadoReservaIn(
       Long horarioClaseId, Collection<EstadoReserva> estados);
 
+  /** Cupos ocupados de varios horarios en una sola consulta: filas [horarioId, cantidad]. */
+  @Query(
+      """
+      select r.horarioClase.id, count(r)
+      from Reserva r
+      where r.horarioClase.id in :horarioIds and r.estadoReserva in :estados
+      group by r.horarioClase.id
+      """)
+  List<Object[]> contarPorHorario(
+      @Param("horarioIds") Collection<Long> horarioIds,
+      @Param("estados") Collection<EstadoReserva> estados);
+
   @Query(
       """
       select r

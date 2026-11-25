@@ -11,6 +11,8 @@ import com.sistema.panterafitness.repository.HorarioClaseRepository;
 import com.sistema.panterafitness.repository.ReservaRepository;
 import com.sistema.panterafitness.repository.SectorGimnasioRepository;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -52,10 +54,21 @@ public class OcupacionService {
   public List<OcupacionClaseResponse> obtenerClases() {
     LocalDate desde = LocalDate.now();
     LocalDate hasta = desde.plusDays(7);
-    return horarioClaseRepository
-        .findByActivaTrueAndFechaBetweenOrderByFechaAscHoraInicioAsc(desde, hasta)
-        .stream()
-        .map(this::toClaseResponse)
+    List<HorarioClase> horarios =
+        horarioClaseRepository.findByActivaTrueAndFechaBetweenOrderByFechaAscHoraInicioAsc(
+            desde, hasta);
+    if (horarios.isEmpty()) {
+      return List.of();
+    }
+    // Una sola consulta agrupada en lugar de un COUNT por horario.
+    Map<Long, Long> ocupados = new HashMap<>();
+    for (Object[] fila :
+        reservaRepository.contarPorHorario(
+            horarios.stream().map(HorarioClase::getId).toList(), ESTADOS_OCUPAN_CUPO)) {
+      ocupados.put((Long) fila[0], (Long) fila[1]);
+    }
+    return horarios.stream()
+        .map(h -> toClaseResponse(h, ocupados.getOrDefault(h.getId(), 0L).intValue()))
         .toList();
   }
 
@@ -79,10 +92,14 @@ public class OcupacionService {
   }
 
   private OcupacionClaseResponse toClaseResponse(HorarioClase horario) {
-    int ocupacion =
+    return toClaseResponse(
+        horario,
         (int)
             reservaRepository.countByHorarioClaseIdAndEstadoReservaIn(
-                horario.getId(), ESTADOS_OCUPAN_CUPO);
+                horario.getId(), ESTADOS_OCUPAN_CUPO));
+  }
+
+  private OcupacionClaseResponse toClaseResponse(HorarioClase horario, int ocupacion) {
     int capacidad = horario.getCupoMaximo();
     return new OcupacionClaseResponse(
         horario.getId(),
