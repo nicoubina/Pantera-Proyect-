@@ -46,7 +46,7 @@ export default function AdminClasses() {
     <div className="stack">
       <PageHeader
         eyebrow="Administrador"
-        title="Ocupacion por clase"
+        title="Ocupación por clase"
         description="Cupos y ocupación registrados por clase."
       />
 

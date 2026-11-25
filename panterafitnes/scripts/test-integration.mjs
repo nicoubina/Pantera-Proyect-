@@ -1,4 +1,6 @@
 // Run against the local demo backend. Creates a uniquely named client in H2.
+// Las fechas se calculan en la zona horaria del gimnasio, igual que el backend.
+process.env.TZ ||= "America/Argentina/Buenos_Aires";
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
 

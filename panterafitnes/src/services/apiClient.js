@@ -3,8 +3,22 @@ import { readStorage, removeStorage } from "./storageService";
 export const TOKEN_KEY = "pantera_jwt";
 export const SESSION_KEY = "pantera_current_user";
 export const SESSION_EXPIRED_EVENT = "pantera:session-expired";
-const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080").trim().replace(/\/+$/, "");
+const API_URL = resolveApiUrl();
 const API_URL_FALLBACK = API_URL.replace("localhost", "127.0.0.1");
+
+/**
+ * URL base de la API.
+ * - NEXT_PUBLIC_API_URL con valor: se usa tal cual (frontend y API en dominios distintos).
+ * - Sin valor y servido por Spring Boot (despliegue unificado / ejecutable): mismo origen.
+ * - Sin valor en "npm run dev" (puerto 3000): backend local en el puerto 8080.
+ */
+function resolveApiUrl() {
+  const configured = (process.env.NEXT_PUBLIC_API_URL || "").trim().replace(/\/+$/, "");
+  if (configured) return configured;
+  const location = typeof window !== "undefined" ? window.location : null;
+  if (location?.origin && location.port !== "3000") return "";
+  return "http://localhost:8080";
+}
 
 export function clearSession() {
   removeStorage(TOKEN_KEY);
@@ -38,7 +52,7 @@ export async function apiRequest(path, { method = "GET", body, auth = true } = {
     } catch (firstError) {
       // Some Windows/browser setups resolve localhost through a different loopback family.
       // Retry only the local alias; never silently change a configured remote API host.
-      if (API_URL_FALLBACK !== API_URL && API_URL.includes("localhost")) {
+      if (API_URL && API_URL_FALLBACK !== API_URL && API_URL.includes("localhost")) {
         response = await request(API_URL_FALLBACK);
       } else {
         throw firstError;

@@ -1,0 +1,23 @@
+# Blueprint de Render: un solo servicio web (frontend + API) en el plan gratuito.
+# Las credenciales de Supabase se cargan en el panel de Render (sync: false); nunca en el repo.
+services:
+  - type: web
+    name: pantera-fitness
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: supabase
+      - key: SUPABASE_DB_URL
+        sync: false
+      - key: SUPABASE_DB_USERNAME
+        sync: false
+      - key: SUPABASE_DB_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PANTERFITNESS_DEMO_ENABLED
+        value: "true"

@@ -93,7 +93,7 @@ export default function LoginForm() {
             </div>
           </label>
           <label>
-            Password
+            Contraseña
             <div style={{ position: "relative" }}>
               <span
                 className="material-symbols-outlined"
@@ -147,7 +147,7 @@ export default function LoginForm() {
               </span>
             ) : (
               <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-                Iniciar sesion
+                Iniciar sesión
                 <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>
                   arrow_forward
                 </span>
@@ -157,7 +157,7 @@ export default function LoginForm() {
         </form>
 
         <p className="auth-link">
-          No tenes usuario? <Link href="/registro">Registrate como cliente</Link>
+          ¿No tenés usuario? <Link href="/registro">Registrate como cliente</Link>
         </p>
       </section>
       <style>{`

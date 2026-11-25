@@ -22,7 +22,7 @@ export function getNavigationItems(role) {
 
   const items = [
     { label: role === ROLES.ADMINISTRADOR ? "Dashboard" : "Inicio", href: basePath, icon: "home" },
-    { label: "Ocupacion", href: `${basePath}/ocupacion`, icon: "monitoring" },
+    { label: "Ocupación", href: `${basePath}/ocupacion`, icon: "monitoring" },
     { label: "Clases", href: `${basePath}/clases`, icon: "fitness_center" },
     { label: reservationsLabel, href: `${basePath}/reservas`, icon: "event_available" },
   ];

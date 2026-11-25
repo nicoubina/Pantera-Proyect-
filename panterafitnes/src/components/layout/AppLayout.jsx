@@ -78,7 +78,7 @@ export default function AppLayout({ children }) {
         </div>
         <button className="ghost-button" type="button" onClick={handleLogout}>
           <span className="material-symbols-outlined">logout</span>
-          <span className="nav-label">Cerrar sesion</span>
+          <span className="nav-label">Cerrar sesión</span>
         </button>
       </aside>
 

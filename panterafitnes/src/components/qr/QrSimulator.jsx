@@ -130,7 +130,7 @@ export default function QrSimulator() {
             </div>
           </div>
         ) : (
-          <p className="inline-warning">No tenes una reserva confirmada para este horario.</p>
+          <p className="inline-warning">No tenés una reserva confirmada para este horario.</p>
         )}
 
         <div className={`result-banner ${qrResult ? `visible ${qrResult.tone}` : ""}`}>

@@ -6,12 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test:integration": "node scripts/test-integration.mjs"
+    "test:integration": "node scripts/test-integration.mjs",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "next": "^15.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  }
 }

@@ -141,6 +141,13 @@ public class DataInitializer implements CommandLineRunner {
     crearNotificacionSistema(profesor, "Tenes clases asignadas para la semana.");
   }
 
+  /** Renueva la agenda demo todos los dias a las 00:10 (idempotente). */
+  @org.springframework.scheduling.annotation.Scheduled(cron = "0 10 0 * * *")
+  @Transactional
+  public void renovarAgendaDemo() {
+    run();
+  }
+
   private Usuario crearUsuario(
       String nombre,
       String apellido,
@@ -171,10 +178,13 @@ public class DataInitializer implements CommandLineRunner {
 
   private HorarioClase crearHorario(
       ClaseGimnasio clase, DayOfWeek dayOfWeek, LocalTime inicio, LocalTime fin) {
-    // Reutilizar incluso horarios pasados/inactivos: reiniciar no genera otra semana.
+    // Agenda semanal recurrente: si ya existe la proxima ocurrencia (hoy o futura) se reutiliza;
+    // si todas quedaron en el pasado se genera la de la semana siguiente. Asi el entorno de
+    // demostracion siempre tiene clases reservables sin cargas manuales.
     var existente =
-        horarioClaseRepository.findFirstByClaseGimnasioIdAndDiaSemanaAndHoraInicioOrderByIdAsc(
-            clase.getId(), DiaSemana.from(dayOfWeek), inicio);
+        horarioClaseRepository
+            .findFirstByClaseGimnasioIdAndDiaSemanaAndHoraInicioAndFechaGreaterThanEqualOrderByFechaAsc(
+                clase.getId(), DiaSemana.from(dayOfWeek), inicio, LocalDate.now());
     if (existente.isPresent()) {
       return existente.get();
     }

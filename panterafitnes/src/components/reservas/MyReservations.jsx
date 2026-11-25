@@ -171,7 +171,7 @@ export default function MyReservations() {
         </section>
       ) : (
         <EmptyState
-          title="Todavia no tenes reservas"
+          title="Todavía no tenés reservas"
           description="Entrá a Clases para reservar o sumarte a lista de espera."
         />
       )}

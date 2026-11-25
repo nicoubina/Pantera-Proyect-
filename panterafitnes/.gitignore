@@ -8,3 +8,5 @@ yarn-debug.log*
 yarn-error.log*
 next-dev*.log
 .DS_Store
+test-results/
+playwright-report/

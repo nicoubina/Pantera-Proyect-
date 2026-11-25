@@ -1,0 +1,25 @@
+PANTERA FITNESS - Version ejecutable para Windows
+==================================================
+
+No hace falta instalar nada (incluye su propio Java).
+
+1. Descomprimir el archivo .zip completo (clic derecho > Extraer todo).
+2. Abrir la carpeta PanteraFitness y hacer doble clic en "Iniciar Pantera Fitness.bat".
+   Si Windows muestra "Windows protegio su PC", elegir "Mas informacion" > "Ejecutar de todas formas".
+3. Esperar unos segundos: el navegador se abre solo en http://localhost:8090/login
+   (si no se abre, entrar manualmente a esa direccion).
+4. Para cerrar el sistema, cerrar la ventana negra del servidor.
+
+Usuarios de prueba (contrasena 123456 para todos):
+  cliente@panterfitness.com     Cliente con membresia activa, reservas, rutina e historial
+  vencido@panterfitness.com     Cliente con membresia vencida (no puede reservar)
+  sancionado@panterfitness.com  Cliente con penalizacion activa
+  espera@panterfitness.com      Cliente primero en lista de espera de una clase llena
+  profesor@panterfitness.com    Profesor
+  admin@panterfitness.com       Administrador
+
+Notas
+- Esta version usa una base de datos local en memoria (H2) con datos de demostracion
+  generados con las fechas del dia: cada vez que se inicia arranca limpia.
+- La version publicada en internet usa la base PostgreSQL de Supabase (datos persistentes).
+- Requiere Windows 10 u 11 de 64 bits y un navegador actualizado.

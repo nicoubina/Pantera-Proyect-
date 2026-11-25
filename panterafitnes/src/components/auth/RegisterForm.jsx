@@ -135,7 +135,7 @@ export default function RegisterForm() {
             </div>
           </label>
           <label>
-            Password
+            Contraseña
             <div style={{ position: "relative" }}>
               <span
                 className="material-symbols-outlined"
@@ -211,7 +211,7 @@ export default function RegisterForm() {
         </form>
 
         <p className="auth-link">
-          Ya tenes usuario? <Link href="/login">Ingresar</Link>
+          ¿Ya tenés usuario? <Link href="/login">Ingresar</Link>
         </p>
       </section>
       <style>{`
